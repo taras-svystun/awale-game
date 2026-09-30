@@ -87,3 +87,16 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - The speed slider goes from 3 s to 0.1 s per move on a log scale, like a volume knob. Faster than 0.1 s is not possible: the window draws 30 frames a second, and a move takes two frames.
 - `awale/ui/thoughts_view.py` draws the panel, and `awale/ui/widgets.py` has the new checkbox and slider. The window is taller (680 px) to make room; Play will use that room for its own thoughts panel later.
 - The window tests use a small fake agent that scores each pit by its number, since no real agent gives scores yet.
+
+## Step 6: the Greedy agent (2026-09-30)
+
+**What:** `GreedyAgent` tries every legal move and plays the one that captures the most seeds. `docs/agents/greedy.md` explains it. It is in the start menu, Watch and Tournament.
+
+**Why:** It is the simplest agent that looks ahead, one move deep, and the first one that really plays. Minimax (step 7) builds on the same idea and must beat it.
+
+**How:**
+- The score of a move is how much our store grows after it. The engine applies the rules, so a grand slam scores 0.
+- When several moves capture the same, Greedy picks one of them at random. With `max` it would always play its leftmost pit when nothing can be captured, which is 69% of its moves.
+- Its thoughts: the capture for each move, the line is just its own move, depth 1, one position per legal move.
+- Greedy against Random, 10000 games: 92.8% ± 0.5% of the points, 20 seeds ahead on average. Greedy against Greedy: 50.2% ± 1.0%, even as it should be.
+- Its weakness: it never looks at the opponent's answer, so it takes 2 seeds and gives away 5. `greedy.md` shows this on a real position.

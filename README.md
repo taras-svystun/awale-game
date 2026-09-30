@@ -22,7 +22,7 @@ Run the second line again after pulling new code, in case new packages were adde
 .venv/bin/awale play
 ```
 
-A start menu opens first. For South and for North, pick Person or an AI agent (only Random for now), pick who moves first, and press Start or Enter.
+A start menu opens first. For South and for North, pick Person or an AI agent (Random or Greedy, see [AI agents](#ai-agents)), pick who moves first, and press Start or Enter.
 Two people can share the computer, or you can play against an AI. If you pick an AI agent on both sides, Start opens [Watch](#watch) instead. To play on a real wooden board against the AI, set your friend as the Person, type in their moves, and copy the AI's moves onto the board: the line under the title says which pit the AI played.
 
 South sits at the bottom and North at the top. Click a pit in your row, or press 1-6 to play your pit counted from your own left (North's pit 1 is at the top right).
@@ -58,10 +58,21 @@ Each agent first thinks about the position on the board and shows its thoughts, 
   - Expected line: the moves it expects next, in move letters (a-f South, A-F North).
   - Work done: how many positions it looked at, how many moves ahead, and how long it took.
 
-Random does not look ahead, so it has no scores and no line, and its work is 0 positions. Greedy (step 6) and Minimax (step 7) will fill them in.
+Random does not look ahead, so it has no scores and no line, and its work is 0 positions. Greedy shows the seeds each move would capture:
+
+```sh
+.venv/bin/awale watch Greedy Random
+```
 
 Keys: N starts a new game with the same agents, M goes back to the menu, Esc quits.
 Every finished Watch game is saved as a game record too.
+
+## AI agents
+
+Each agent is explained in its own file in [docs/agents](docs/agents):
+
+- **Random** ([random.md](docs/agents/random.md)): plays any legal move. The baseline.
+- **Greedy** ([greedy.md](docs/agents/greedy.md)): plays the move that captures the most seeds right now. Beats Random in about 93% of the points.
 
 ## Tournament
 
@@ -84,6 +95,13 @@ The same `--seed` plays exactly the same games again:
 
 ```sh
 .venv/bin/awale tournament Random Random --seed 1
+```
+
+Greedy against Random, and Greedy against itself:
+
+```sh
+.venv/bin/awale tournament Greedy Random
+.venv/bin/awale tournament Greedy Greedy
 ```
 
 Save every game in a CSV file in `records/tournaments` (the last 10 tournaments are kept):
@@ -143,10 +161,10 @@ Only the quick rule tests, without OpenSpiel:
 .venv/bin/pytest tests/test_position.py tests/test_game.py
 ```
 
-Only the Random agent's tests:
+Only the agents' tests:
 
 ```sh
-.venv/bin/pytest tests/test_random_agent.py
+.venv/bin/pytest tests/test_random_agent.py tests/test_greedy_agent.py
 ```
 
 Only the Watch window tests:

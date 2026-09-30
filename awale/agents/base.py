@@ -36,7 +36,7 @@ class Agent(ABC):
     name = "Agent"
 
     def __init__(self, seed: int | None = None):
-        # Every agent has its own random generator, for agents that use chance (Random now, MCTS later).
+        # Every agent has its own random generator, for agents that use chance (Random, Greedy's ties, MCTS later).
         # Not the shared `random` module: the same seed then always gives the same moves,
         # so a game or a whole tournament can be repeated exactly.
         self.rng = random.Random(seed)
