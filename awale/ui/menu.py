@@ -11,8 +11,8 @@ from awale.ui.watch import WatchScreen
 from awale.ui.widgets import Button, blit_centered
 
 ROW_Y = {Side.SOUTH: 190, Side.NORTH: 260, "first": 330}
-LABEL_RIGHT, OPTIONS_X = 250, 280
-OPTION_WIDTH, OPTION_GAP, OPTION_HEIGHT = 150, 16, 46
+LABEL_RIGHT, OPTIONS_X = 220, 250
+OPTION_WIDTH, OPTION_GAP, OPTION_HEIGHT = 128, 12, 46
 
 
 def option_rect(row, i: int) -> pygame.Rect:

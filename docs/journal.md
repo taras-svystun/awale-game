@@ -113,3 +113,17 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - Heuristics live in `awale/agents/heuristics.py`, apart from the search, so step 9 can give Minimax other ones.
 - `make_agent("Minimax:6")` builds an agent from a name with a depth. The tournament, `awale watch` and the menu all use it, and the name with its depth goes into game records. The menu buttons moved left to make room for a fourth one.
 - Tournaments: `Minimax:2` wins 99.2% ± 0.2% of the points against Greedy over 10000 games, so just looking at the answer fixes Greedy. Against itself each extra move of depth wins clearly: depth 4 gets 77.6% against depth 2, depth 6 gets 83.5% against depth 4, but thinks 20 times longer (63 ms against 3 ms per move). That is the case for alpha-beta. Minimax against Minimax: 50.9% ± 1.5%, even.
+
+## Step 8: the AlphaBeta agent (2026-09-30)
+
+**What:** `AlphaBetaAgent` is Minimax with alpha-beta pruning: it stops looking at a move as soon as it is proved worse than one it already has. It looks 6 moves ahead by default. `docs/agents/alphabeta.md` explains it. It is in the start menu, Watch and Tournament, and `AlphaBeta:8` sets its depth.
+
+**Why:** Each move of depth wins clearly, but Minimax's time grows 4–5 times per move of depth. Alpha-beta gives exactly the same moves for far less work, so we can afford to look deeper.
+
+**How:**
+- `AlphaBetaAgent` is a subclass of `MinimaxAgent` and replaces only the search: `alphabeta` carries a window (alpha, beta) down the tree and stops when alpha ≥ beta. It only replaces its best move with a strictly better one, so on a tie it keeps the leftmost pit, like Minimax, and gives the same expected line.
+- At the top, every one of our moves is searched with the widest window, so it gets its exact score. Watch then shows the same scores as Minimax, and a tie between the best moves is broken at random in the same way. This costs about a third more positions at depth 6 than a textbook alpha-beta, and gives exactly Minimax's thoughts.
+- The tests check that its thoughts are exactly Minimax's on many positions, that whole games and a tournament come out the same, and the promise of the window: a value inside it is exact, one outside is a bound.
+- From the start position it looks at 7 times fewer positions than Minimax at depth 6, and 30 times fewer at depth 8. In tournaments with the same seed it plays exactly Minimax's games: `AlphaBeta:6` and `Minimax:6` against Greedy both win 497, draw 2 and lose 1, at 14 ms and 95 ms per move.
+- The saved time buys depth: `AlphaBeta:8` against `Minimax:6`, with about the same time per move, gets 81.0% ± 3.3% of the points. AlphaBeta against itself: 50.2% ± 2.1%, even.
+- The start menu now has five agents in a row, so the buttons are narrower.

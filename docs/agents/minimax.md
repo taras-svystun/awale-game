@@ -114,7 +114,7 @@ It is a separate function, not part of Minimax, because a heuristic and a search
 | 6 | 33 797 | 0.19 s |
 | 7 | 172 954 | 0.95 s |
 
-Depth 8 would take about 5 seconds per move. Alpha-beta (step 8) gives the same moves while skipping most of these positions.
+Depth 8 would take about 5 seconds per move. Alpha-beta gives the same moves while skipping most of these positions: see [alphabeta.md](alphabeta.md).
 
 ## An example on a real position
 

@@ -9,7 +9,7 @@ import threading
 import pygame
 import pytest
 
-from awale.agents import Agent, RandomAgent
+from awale.agents import AGENTS, Agent, AlphaBetaAgent, RandomAgent
 from awale.engine import Side
 from awale.ui.board_view import HEIGHT, WIDTH, pit_center
 from awale.ui.menu import PERSON, MenuScreen
@@ -166,6 +166,19 @@ def test_the_menu_starts_a_game_with_the_chosen_players():
     assert isinstance(screen.players[Side.SOUTH], RandomAgent)
     assert screen.players[Side.NORTH] is None
     assert screen.game.position.to_move is Side.NORTH
+
+
+def test_the_menu_offers_every_ai_agent_and_every_button_fits_in_the_window():
+    menu = MenuScreen()
+    window = pygame.Rect(0, 0, WIDTH, HEIGHT)
+
+    assert {name for _, name in menu.player_buttons} == {PERSON, *AGENTS}
+    for button in [*menu.player_buttons.values(), *menu.first_buttons.values(), menu.start_button]:
+        assert window.contains(button.rect), button.label
+
+    click(menu, menu.player_buttons[(Side.NORTH, "AlphaBeta")].rect.center)
+    screen = press(menu, pygame.K_RETURN)
+    assert isinstance(screen.players[Side.NORTH], AlphaBetaAgent)
 
 
 def test_back_to_the_menu_keeps_the_choices():

@@ -1,5 +1,6 @@
 """Agents: anything that chooses a move in a position. No Pygame here."""
 
+from awale.agents.alphabeta_agent import AlphaBetaAgent
 from awale.agents.base import Agent, Thoughts
 from awale.agents.greedy_agent import GreedyAgent
 from awale.agents.minimax_agent import MinimaxAgent
@@ -10,9 +11,10 @@ AGENTS: dict[str, type[Agent]] = {
     "Random": RandomAgent,
     "Greedy": GreedyAgent,
     "Minimax": MinimaxAgent,
+    "AlphaBeta": AlphaBetaAgent,
 }
 # Agents that look a fixed number of moves ahead. Their name may end with ":depth", like "Minimax:6".
-SEARCH_AGENTS = {"Minimax"}
+SEARCH_AGENTS = {"Minimax", "AlphaBeta"}
 
 
 def make_agent(name: str, seed: int | None = None) -> Agent:
@@ -35,4 +37,14 @@ def make_agent(name: str, seed: int | None = None) -> Agent:
     return agent
 
 
-__all__ = ["AGENTS", "SEARCH_AGENTS", "Agent", "GreedyAgent", "MinimaxAgent", "RandomAgent", "Thoughts", "make_agent"]
+__all__ = [
+    "AGENTS",
+    "SEARCH_AGENTS",
+    "Agent",
+    "AlphaBetaAgent",
+    "GreedyAgent",
+    "MinimaxAgent",
+    "RandomAgent",
+    "Thoughts",
+    "make_agent",
+]

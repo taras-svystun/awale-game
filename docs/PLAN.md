@@ -55,7 +55,7 @@ Words in **bold** are defined in `../CONTEXT.md`.
 - [x] 5. Watch with the thoughts panel.
 - [x] 6. Greedy agent, then a tournament.
 - [x] 7. Minimax with the `store_diff` heuristic, then a tournament.
-- [ ] 8. Alpha-beta, then a tournament. It should give the same moves as Minimax, only faster.
+- [x] 8. Alpha-beta, then a tournament. It should give the same moves as Minimax, only faster.
 - [ ] 9. Better heuristics: seeds on my side, weak pits with 1–2 seeds, mobility, a big pit with 12+ seeds.
 - [ ] 10. Move ordering, iterative deepening and a time limit.
 - [ ] 11. MCTS.

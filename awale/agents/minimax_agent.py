@@ -26,9 +26,10 @@ class MinimaxAgent(Agent):
     ):
         super().__init__(seed)
         if depth < 1:
-            raise ValueError(f"Minimax needs a depth of at least 1, not {depth}")
+            raise ValueError(f"{self.name} needs a depth of at least 1, not {depth}")
         self.depth = depth
         self.heuristic = heuristic
+        self.positions = 0  # counted by the search, and reset for each move
 
     def think(self, position: Position) -> Thoughts:
         me = position.to_move
