@@ -53,8 +53,8 @@ Words in **bold** are defined in `../CONTEXT.md`.
 - [ ] 3. Agent interface, the Random agent, Play against AI, Undo.
 - [ ] 4. Tournament and game records. Random vs Random should give about 50/50.
 - [ ] 5. Watch with the thoughts panel.
-- [ ] 6. Greedy agent (Taras writes it), then a tournament.
-- [ ] 7. Minimax with the `store_diff` heuristic (Taras writes it), then a tournament.
+- [ ] 6. Greedy agent, then a tournament.
+- [ ] 7. Minimax with the `store_diff` heuristic, then a tournament.
 - [ ] 8. Alpha-beta, then a tournament. It should give the same moves as Minimax, only faster.
 - [ ] 9. Better heuristics: seeds on my side, weak pits with 1–2 seeds, mobility, a big pit with 12+ seeds.
 - [ ] 10. Move ordering, iterative deepening and a time limit.
