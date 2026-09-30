@@ -1,7 +1,5 @@
 """The Random agent: the simplest agent, and the baseline every other agent must beat."""
 
-import random
-
 from awale.agents.base import Agent
 from awale.engine import Position
 
@@ -11,11 +9,7 @@ class RandomAgent(Agent):
 
     name = "Random"
 
-    def __init__(self, seed: int | None = None):
-        # Its own random generator, not the shared `random` module:
-        # the same seed then always gives the same moves, so a game can be repeated.
-        self.rng = random.Random(seed)
-
     def choose_move(self, position: Position) -> int:
+        # self.rng comes from Agent, and is seeded by `RandomAgent(seed=...)`.
         # No thinking at all: every legal move has the same chance.
         return self.rng.choice(position.legal_moves())

@@ -1,5 +1,6 @@
 """What every AI agent looks like from the outside."""
 
+import random
 from abc import ABC, abstractmethod
 
 from awale.engine import Position
@@ -13,6 +14,12 @@ class Agent(ABC):
     """
 
     name = "Agent"
+
+    def __init__(self, seed: int | None = None):
+        # Every agent has its own random generator, for agents that use chance (Random now, MCTS later).
+        # Not the shared `random` module: the same seed then always gives the same moves,
+        # so a game or a whole tournament can be repeated exactly.
+        self.rng = random.Random(seed)
 
     @abstractmethod
     def choose_move(self, position: Position) -> int:
