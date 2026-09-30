@@ -5,10 +5,9 @@ import pygame
 from awale.agents import AGENTS
 from awale.engine import Side
 from awale.ui.board_view import BACKGROUND, HEIGHT, TEXT, TEXT_SOFT, WIDTH
-from awale.ui.play import PlayScreen
+from awale.ui.play import PERSON, PlayScreen
 from awale.ui.widgets import Button, blit_centered
 
-PERSON = "Person"
 ROW_Y = {Side.SOUTH: 190, Side.NORTH: 260, "first": 330}
 LABEL_RIGHT, OPTIONS_X = 370, 400
 OPTION_WIDTH, OPTION_GAP, OPTION_HEIGHT = 150, 16, 46

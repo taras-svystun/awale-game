@@ -105,6 +105,10 @@ _Avoid_: Spectate, replay
 Many games between AI agents, run without a window, to compare them with numbers instead of by eye.
 _Avoid_: Arena, benchmark, simulation
 
+**Points**:
+In a tournament, a win gives an agent 1 point, a draw 1/2 and a loss 0. An agent's points are shown as a share of the games played: 50% means the two agents are even.
+_Avoid_: Score (the score is the seeds each player ends a game with), rating
+
 **Hint**:
 In Play, the move an AI agent would choose for the person whose turn it is, shown only when the person asks.
 _Avoid_: Tip, suggestion, assist

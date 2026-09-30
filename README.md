@@ -30,6 +30,74 @@ Pits you cannot play are dimmed. The orange ring shows the last move.
 
 Keys: U or Backspace undoes (one move between two people, or back to your last turn against an AI), N starts a new game with the same players, M goes back to the menu, Esc quits.
 
+Every finished game is saved as a game record in `records/games` (see [Game records](#game-records) below).
+
+## Tournament
+
+Play many games between two AI agents, with no window, and compare them:
+
+```sh
+.venv/bin/awale tournament Random Random
+```
+
+Agent A is the first name and agent B the second. This plays 500 random openings of 6 moves, each twice with the agents swapping sides (1000 games), on all CPU cores. It takes about a second for Random.
+It prints A's wins, draws and losses, A's points with a 95% confidence interval (a win is 1 point, a draw 1/2), the average difference in seeds, the time per move, and whether one agent is clearly stronger.
+
+More games give a smaller interval. Four times more games make it two times smaller:
+
+```sh
+.venv/bin/awale tournament Random Random --openings 5000
+```
+
+The same `--seed` plays exactly the same games again:
+
+```sh
+.venv/bin/awale tournament Random Random --seed 1
+```
+
+Save every game in a CSV file in `records/tournaments` (the last 10 tournaments are kept):
+
+```sh
+.venv/bin/awale tournament Random Random --save
+```
+
+All options:
+
+```sh
+.venv/bin/awale tournament --help
+```
+
+## Game records
+
+The last 100 Play games are saved in `records/games`, one JSON file per game, named by the time the game ended.
+Moves are written a-f for South's pits 1-6 and A-F for North's pits 1-6, so `c D` means South played its pit 3, then North its pit 4.
+
+See the newest game:
+
+```sh
+ls records/games | tail -1
+cat "records/games/$(ls records/games | tail -1)"
+```
+
+Replay a saved game in Python and look at any position in it:
+
+```sh
+.venv/bin/python
+```
+
+```python
+from pathlib import Path
+from awale.records import load_game
+
+newest = sorted(Path("records/games").iterdir())[-1]
+record = load_game(newest)
+record.moves                     # ('c', 'D', 'a', ...)
+game = record.replay()
+game.positions[10]               # the position after 10 moves
+```
+
+A saved tournament CSV has one row per game, and its `record` column holds all the moves in the same letters.
+
 ## Run the tests
 
 ```sh
@@ -48,6 +116,12 @@ Only the Random agent's tests:
 
 ```sh
 .venv/bin/pytest tests/test_random_agent.py
+```
+
+Only the tournament and game record tests:
+
+```sh
+.venv/bin/pytest tests/test_tournament.py tests/test_records.py
 ```
 
 ## Try the engine in Python

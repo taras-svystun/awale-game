@@ -9,6 +9,7 @@ import pytest
 
 from awale.engine import Game, Position, Side
 from awale.ui.board_view import HEIGHT, WIDTH, pit_at, pit_center
+from awale.records import load_game
 from awale.ui.play import PlayScreen
 
 
@@ -117,3 +118,21 @@ def test_undo_between_two_people_takes_back_one_move(screen):
 
     press(screen, pygame.K_u)  # nothing left to undo
     assert screen.game.moves == []
+
+
+def test_a_finished_game_is_saved_as_a_game_record(screen, records_in_a_temporary_folder):
+    while not screen.game.is_over:
+        screen.try_move(screen.playable[0])
+
+    saved = list((records_in_a_temporary_folder / "games").iterdir())
+    assert len(saved) == 1
+    record = load_game(saved[0])
+    assert (record.south, record.north) == ("Person", "Person")
+    assert record.replay().positions == screen.game.positions
+
+
+def test_an_unfinished_game_is_not_saved(screen, records_in_a_temporary_folder):
+    screen.try_move(1)
+    screen.new_game()
+
+    assert not (records_in_a_temporary_folder / "games").exists()

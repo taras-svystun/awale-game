@@ -5,7 +5,8 @@ import time
 import pygame
 
 from awale.agents import Agent
-from awale.engine import Game, Side
+from awale.engine import Game, Position, Side
+from awale.records import GameRecord, save_game
 from awale.ui.agent_thread import AgentThread
 from awale.ui.board_view import BACKGROUND, HEIGHT, TEXT, TEXT_SOFT, WIDTH, BoardView, pit_at
 from awale.ui.widgets import Button, blit_centered
@@ -14,6 +15,8 @@ PIT_KEYS = {
     **{getattr(pygame, f"K_{n}"): n for n in range(1, 7)},
     **{getattr(pygame, f"K_KP{n}"): n for n in range(1, 7)},
 }
+# How a person is named in the menu and in game records.
+PERSON = "Person"
 HELP = "Click a pit or press 1-6 (from your own left).    Esc: quit"
 # An AI's move waits at least this long (seconds), so you can see your own move land first.
 AI_MOVE_DELAY = 0.7
@@ -113,6 +116,14 @@ class PlayScreen:
         if captured and not self.game.is_over:
             self.message += f" and captured {captured} seeds"
         self.message += "."
+        if self.game.is_over:
+            self.save_record()
+
+    def save_record(self) -> None:
+        """Save the finished game in records/games. If you undo and finish it again, that is saved too."""
+        if self.game.positions[0] != Position.start(self.first):
+            return  # a game set up by hand (the tests do this) cannot be told by its moves alone
+        save_game(GameRecord.of(self.game, self.agent_name(Side.SOUTH), self.agent_name(Side.NORTH)))
 
     def undo(self) -> None:
         """Take back moves until a person is to move: one move between two people,
@@ -135,10 +146,14 @@ class PlayScreen:
         return None
 
     def open_menu(self):
-        from awale.ui.menu import PERSON, MenuScreen  # imported here because the menu imports this file
+        from awale.ui.menu import MenuScreen  # imported here because the menu imports this file
 
-        choices = {side: agent.name if agent else PERSON for side, agent in self.players.items()}
+        choices = {side: self.agent_name(side) for side in Side}
         return MenuScreen(choices, self.first)
+
+    def agent_name(self, side: Side) -> str:
+        agent = self.players[side]
+        return agent.name if agent else PERSON
 
     def player_name(self, side: Side) -> str:
         agent = self.players[side]

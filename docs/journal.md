@@ -59,3 +59,17 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - The agent has its own random generator, so the same seed always gives the same game.
 - A quick run of 2000 games of Random against Random: North won 977, South 891, 132 draws. The tournament in step 4 will measure this properly.
 - From now on, every agent gets its own explanation in `docs/agents/`.
+
+## Step 4: tournament and game records (2026-09-30)
+
+**What:** `awale tournament A B` plays many games between two AI agents with no window and prints who is stronger. Finished Play games are saved as game records in `records/games`, and `--save` writes a tournament's games to a CSV in `records/tournaments`.
+
+**Why:** From step 6 on, every new agent must prove it beats the ones we have. Watching a few games is not enough: luck decides a lot, so we need many games and a number that says how sure we are. Game records let us look at any game again later.
+
+**How:**
+- `awale/tournament.py` makes 500 different random openings of 6 moves and plays each twice, with the agents swapping sides. Random against Random showed why: North wins clearly more often than South, so each agent must get each side equally often.
+- The report gives A's points (a win is 1, a draw 1/2) with a 95% confidence interval: the average ± 1.96 standard errors. If the interval includes 50%, the games cannot tell the agents apart.
+- The games run in one process per CPU core. All random choices (openings and each agent's seed) are made before the games start, so the same `--seed` gives the same games on any number of cores. For that, every agent now gets its own seeded random generator from `Agent`.
+- Random against Random over 10000 games: A's points 50.5% ± 1.0%, as it should be for two equal agents.
+- `awale/records.py` writes moves as a-f for South and A-F for North, saves one JSON file per game, and keeps only the newest 100 games and 10 tournaments. `GameRecord.replay()` plays a record back into a `Game`.
+- Tests never write into the real `records/` folder: `tests/conftest.py` points it to a temporary folder.

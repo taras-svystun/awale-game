@@ -51,7 +51,7 @@ Words in **bold** are defined in `../CONTEXT.md`.
 - [x] 1. Engine and tests against OpenSpiel.
 - [x] 2. Play for two people in Pygame, and a README with run commands.
 - [x] 3. Agent interface, the Random agent, Play against AI, Undo.
-- [ ] 4. Tournament and game records. Random vs Random should give about 50/50.
+- [x] 4. Tournament and game records. Random vs Random should give about 50/50.
 - [ ] 5. Watch with the thoughts panel.
 - [ ] 6. Greedy agent, then a tournament.
 - [ ] 7. Minimax with the `store_diff` heuristic, then a tournament.
