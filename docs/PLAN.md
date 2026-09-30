@@ -14,7 +14,7 @@ Words in **bold** are defined in `../CONTEXT.md`.
 - a **repetition** ends the game and each player takes their own row.
 
 **Tech.**
-- Python 3.11, `uv` for the environment, `pytest` for tests, Pygame for the window.
+- Python 3.11 with a plain `venv` and `pip`, `pytest` for tests, Pygame for the window.
 - Our own engine in plain Python, checked against OpenSpiel on thousands of random games (see `adr/0001`).
 - The engine and the agents never import Pygame, so a web version can be added later as just another front end.
 
@@ -48,7 +48,7 @@ Words in **bold** are defined in `../CONTEXT.md`.
 
 ## Steps
 
-- [ ] 1. Engine and tests against OpenSpiel.
+- [x] 1. Engine and tests against OpenSpiel.
 - [ ] 2. Play for two people in Pygame, and a README with run commands.
 - [ ] 3. Agent interface, the Random agent, Play against AI, Undo.
 - [ ] 4. Tournament and game records. Random vs Random should give about 50/50.

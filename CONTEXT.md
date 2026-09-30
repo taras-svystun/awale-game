@@ -30,6 +30,14 @@ _Avoid_: Ball, stone, graine, bean
 The pile of seeds a player has captured. Seeds in a store never go back to the board.
 _Avoid_: Granary, bank, mancala, grenier, score pit
 
+**Position**:
+A moment in a game: the seeds in every pit, both stores, and whose turn it is. It knows nothing about earlier moves.
+_Avoid_: State, board state, snapshot
+
+**Game**:
+All positions from the start of one game up to now, with the moves between them and how it ended.
+_Avoid_: Match, round, session
+
 ### Moves
 
 **Move**:
@@ -55,7 +63,7 @@ _Avoid_: Giving, nourishing
 ### End of the game
 
 **Win**:
-A player wins when their store has 25 or more seeds. If both stores end with 24, it is a draw.
+A player wins when their store has 25 or more seeds. If both stores end with 24, it is a draw. However a game ends, the seeds left on the board go to the owner of each row, so the final score always adds up to 48.
 
 **Repetition**:
 When a position happens again, the game ends and each player takes the seeds left in their own row.
