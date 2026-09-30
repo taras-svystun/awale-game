@@ -17,7 +17,7 @@ AI agents are a shared lesson. For Random, Greedy and Minimax, Taras writes the 
 
 A step is one item in `docs/PLAN.md`, or a smaller piece agreed in chat. It is done when all of these are true:
 
-1. Tests pass: `uv run pytest`.
+1. Tests pass: `.venv/bin/pytest`.
 2. `README.md` has a copy-paste command for every way to run the project. Taras should never guess a command.
 3. `docs/journal.md` has a new entry: what we did, why, and how, in a few short lines.
 4. The step is ticked in `docs/PLAN.md`.
