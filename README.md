@@ -22,7 +22,7 @@ Run the second line again after pulling new code, in case new packages were adde
 .venv/bin/awale play
 ```
 
-A start menu opens first. For South and for North, pick Person or an AI agent (Random or Greedy, see [AI agents](#ai-agents)), pick who moves first, and press Start or Enter.
+A start menu opens first. For South and for North, pick Person or an AI agent (Random, Greedy or Minimax, see [AI agents](#ai-agents)), pick who moves first, and press Start or Enter.
 Two people can share the computer, or you can play against an AI. If you pick an AI agent on both sides, Start opens [Watch](#watch) instead. To play on a real wooden board against the AI, set your friend as the Person, type in their moves, and copy the AI's moves onto the board: the line under the title says which pit the AI played.
 
 South sits at the bottom and North at the top. Click a pit in your row, or press 1-6 to play your pit counted from your own left (North's pit 1 is at the top right).
@@ -64,6 +64,18 @@ Random does not look ahead, so it has no scores and no line, and its work is 0 p
 .venv/bin/awale watch Greedy Random
 ```
 
+Minimax shows how good each move is after looking 4 moves ahead, and the line of play it expects:
+
+```sh
+.venv/bin/awale watch Minimax Greedy
+```
+
+Put a depth after a colon to make Minimax look further ahead (or less far). Depth 6 takes up to about 0.2 seconds per move:
+
+```sh
+.venv/bin/awale watch Minimax:6 Minimax:2
+```
+
 Keys: N starts a new game with the same agents, M goes back to the menu, Esc quits.
 Every finished Watch game is saved as a game record too.
 
@@ -73,6 +85,9 @@ Each agent is explained in its own file in [docs/agents](docs/agents):
 
 - **Random** ([random.md](docs/agents/random.md)): plays any legal move. The baseline.
 - **Greedy** ([greedy.md](docs/agents/greedy.md)): plays the move that captures the most seeds right now. Beats Random in about 93% of the points.
+- **Minimax** ([minimax.md](docs/agents/minimax.md)): looks 4 moves ahead and expects the opponent to answer with their best move. It judges where it stops by the seeds each player has captured. `Minimax:6` looks 6 moves ahead, `Minimax:2` only 2. Even `Minimax:2` beats Greedy in 99% of the points.
+
+In the start menu, Minimax always looks 4 moves ahead. On the command line (`watch` and `tournament`) you can set its depth.
 
 ## Tournament
 
@@ -102,6 +117,13 @@ Greedy against Random, and Greedy against itself:
 ```sh
 .venv/bin/awale tournament Greedy Random
 .venv/bin/awale tournament Greedy Greedy
+```
+
+Minimax against Greedy (about 10 seconds), and Minimax looking 4 moves ahead against Minimax looking 2 moves ahead (about 30 seconds):
+
+```sh
+.venv/bin/awale tournament Minimax Greedy
+.venv/bin/awale tournament Minimax Minimax:2
 ```
 
 Save every game in a CSV file in `records/tournaments` (the last 10 tournaments are kept):
@@ -164,7 +186,7 @@ Only the quick rule tests, without OpenSpiel:
 Only the agents' tests:
 
 ```sh
-.venv/bin/pytest tests/test_random_agent.py tests/test_greedy_agent.py
+.venv/bin/pytest tests/test_agents.py tests/test_random_agent.py tests/test_greedy_agent.py tests/test_minimax_agent.py
 ```
 
 Only the Watch window tests:

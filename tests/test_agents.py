@@ -5,7 +5,7 @@ import sys
 
 import pytest
 
-from awale.agents import Agent, RandomAgent, Thoughts
+from awale.agents import Agent, GreedyAgent, MinimaxAgent, RandomAgent, Thoughts, make_agent
 from awale.engine import Position
 
 
@@ -38,3 +38,24 @@ def test_an_agent_must_write_choose_move_or_think():
 
         class EmptyAgent(Agent):
             pass
+
+
+def test_make_agent_builds_an_agent_by_its_name():
+    agent = make_agent("Greedy", seed=1)
+
+    assert isinstance(agent, GreedyAgent)
+    assert agent.name == "Greedy"
+
+
+def test_make_agent_sets_the_depth_of_a_search_agent():
+    default, deep = make_agent("Minimax"), make_agent("Minimax:6")
+
+    assert isinstance(deep, MinimaxAgent)
+    assert (default.depth, deep.depth) == (4, 6)
+    assert deep.name == "Minimax:6"  # shown in the window and written in game records
+
+
+@pytest.mark.parametrize("name", ["Nobody", "Greedy:3", "Minimax:0", "Minimax:deep", "Minimax:"])
+def test_make_agent_refuses_a_name_it_does_not_know(name):
+    with pytest.raises(ValueError):
+        make_agent(name)

@@ -151,3 +151,23 @@ def test_the_tournament_command_prints_the_report():
     assert "10 games: 5 random openings of 6 moves" in result.stdout
     assert "A's points:" in result.stdout
     assert "Played 10 of 10 games" in result.stderr
+
+
+def test_the_tournament_command_takes_a_search_depth():
+    awale = Path(sys.executable).parent / "awale"
+
+    result = subprocess.run(
+        [awale, "tournament", "Minimax:2", "Greedy", "--openings", "2", "--seed", "1", "--workers", "1"],
+        capture_output=True, text=True, check=True,
+    )  # fmt: skip
+
+    assert "A: Minimax:2    B: Greedy" in result.stdout
+
+
+def test_the_tournament_command_refuses_an_unknown_agent_before_playing():
+    awale = Path(sys.executable).parent / "awale"
+
+    result = subprocess.run([awale, "tournament", "Greedy:3", "Random"], capture_output=True, text=True)
+
+    assert result.returncode != 0
+    assert "Greedy has no depth to set" in result.stderr

@@ -3,9 +3,24 @@
 import argparse
 import sys
 
-from awale.agents import AGENTS
+from awale.agents import AGENTS, SEARCH_AGENTS, make_agent
 from awale.engine import Side
 from awale.tournament import OPENING_MOVES, OPENINGS, run_tournament
+
+
+def agent_name(name: str) -> str:
+    """Check an agent name on the command line, so a typo is reported before anything starts."""
+    try:
+        make_agent(name)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from None
+    return name
+
+
+AGENT_NAMES = (
+    f"one of {', '.join(AGENTS)}; "
+    f"{' and '.join(sorted(SEARCH_AGENTS))} can also take a depth, like Minimax:6"
+)
 
 
 def main() -> None:
@@ -17,8 +32,8 @@ def main() -> None:
         "watch",
         help="Open a window where two AI agents play each other, with their thoughts next to the board.",
     )
-    watch.add_argument("south", choices=list(AGENTS), help="the agent playing South (at the bottom)")
-    watch.add_argument("north", choices=list(AGENTS), help="the agent playing North (at the top)")
+    watch.add_argument("south", type=agent_name, help=f"the agent playing South (at the bottom): {AGENT_NAMES}")
+    watch.add_argument("north", type=agent_name, help="the agent playing North (at the top)")
     watch.add_argument("--first", choices=["south", "north"], default="south", help="who moves first (default south)")
 
     tournament = commands.add_parser(
@@ -26,8 +41,8 @@ def main() -> None:
         help="Play many games between two AI agents, with no window, and compare them.",
         description="Each random opening is played twice, with the agents swapping sides.",
     )
-    tournament.add_argument("a", choices=list(AGENTS), help="agent A")
-    tournament.add_argument("b", choices=list(AGENTS), help="agent B")
+    tournament.add_argument("a", type=agent_name, help=f"agent A: {AGENT_NAMES}")
+    tournament.add_argument("b", type=agent_name, help="agent B")
     tournament.add_argument("--openings", type=int, default=OPENINGS, help=f"how many random openings (default {OPENINGS}); there are two games per opening")
     tournament.add_argument("--opening-moves", type=int, default=OPENING_MOVES, help=f"random moves in each opening (default {OPENING_MOVES})")
     tournament.add_argument("--seed", type=int, help="the same seed plays exactly the same games again")
@@ -43,7 +58,7 @@ def main() -> None:
         from awale.ui.app import run
         from awale.ui.watch import WatchScreen
 
-        players = {Side.SOUTH: AGENTS[args.south](), Side.NORTH: AGENTS[args.north]()}
+        players = {Side.SOUTH: make_agent(args.south), Side.NORTH: make_agent(args.north)}
         run(lambda: WatchScreen(players, Side[args.first.upper()]))
     elif args.command == "tournament":
         run_tournament_command(args)

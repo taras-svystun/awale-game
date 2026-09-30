@@ -2,7 +2,7 @@
 
 import pygame
 
-from awale.agents import AGENTS
+from awale.agents import AGENTS, make_agent
 from awale.engine import Side
 from awale.ui.board_view import BACKGROUND, HEIGHT, TEXT, TEXT_SOFT, WIDTH
 from awale.ui.game_screen import PERSON
@@ -11,7 +11,7 @@ from awale.ui.watch import WatchScreen
 from awale.ui.widgets import Button, blit_centered
 
 ROW_Y = {Side.SOUTH: 190, Side.NORTH: 260, "first": 330}
-LABEL_RIGHT, OPTIONS_X = 370, 400
+LABEL_RIGHT, OPTIONS_X = 250, 280
 OPTION_WIDTH, OPTION_GAP, OPTION_HEIGHT = 150, 16, 46
 
 
@@ -21,7 +21,7 @@ def option_rect(row, i: int) -> pygame.Rect:
 
 class MenuScreen:
     def __init__(self, choices: dict[Side, str] | None = None, first: Side = Side.SOUTH):
-        # For each side, PERSON or the name of an AI agent from AGENTS.
+        # For each side, PERSON or the name of an AI agent, like "Greedy" or "Minimax:6" (see make_agent).
         self.choices = choices or {Side.SOUTH: PERSON, Side.NORTH: "Random"}
         self.first = first
         self.hover: tuple[int, int] | None = None
@@ -58,7 +58,7 @@ class MenuScreen:
         return PERSON not in self.choices.values()
 
     def start(self):
-        players = {side: None if name == PERSON else AGENTS[name]() for side, name in self.choices.items()}
+        players = {side: None if name == PERSON else make_agent(name) for side, name in self.choices.items()}
         if self.is_watch:
             return WatchScreen(players, self.first)
         return PlayScreen(players, self.first)

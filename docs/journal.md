@@ -100,3 +100,16 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - Its thoughts: the capture for each move, the line is just its own move, depth 1, one position per legal move.
 - Greedy against Random, 10000 games: 92.8% ± 0.5% of the points, 20 seeds ahead on average. Greedy against Greedy: 50.2% ± 1.0%, even as it should be.
 - Its weakness: it never looks at the opponent's answer, so it takes 2 seeds and gives away 5. `greedy.md` shows this on a real position.
+
+## Step 7: the Minimax agent (2026-09-30)
+
+**What:** `MinimaxAgent` looks 4 moves ahead, expecting the opponent to answer with their best move, and judges the positions where it stops with the `store_diff` heuristic: my store minus theirs. `docs/agents/minimax.md` explains it. It is in the start menu, Watch and Tournament, and on the command line `Minimax:6` sets its depth.
+
+**Why:** Greedy never looks at the opponent's answer, so it takes 2 seeds and gives away 5. Minimax is the classic fix, and the base for alpha-beta (step 8), which must choose the same moves faster, and for better heuristics (step 9).
+
+**How:**
+- `minimax` calls itself one move deeper for each legal move: on our turns it takes the highest value, on the opponent's the lowest. It also returns the line of play that leads to the value, which Watch shows as the expected line.
+- A position where the game ends is not guessed: the seeds left go to each row's owner, and a win is worth 100 plus the depth still left, so a win beats any seed count and a quick win beats a slow one. `Position.ends_game()` is new, and `Game` uses it too, so both agree on when a game ends. The search does not see repetitions.
+- Heuristics live in `awale/agents/heuristics.py`, apart from the search, so step 9 can give Minimax other ones.
+- `make_agent("Minimax:6")` builds an agent from a name with a depth. The tournament, `awale watch` and the menu all use it, and the name with its depth goes into game records. The menu buttons moved left to make room for a fourth one.
+- Tournaments: `Minimax:2` wins 99.2% ± 0.2% of the points against Greedy over 10000 games, so just looking at the answer fixes Greedy. Against itself each extra move of depth wins clearly: depth 4 gets 77.6% against depth 2, depth 6 gets 83.5% against depth 4, but thinks 20 times longer (63 ms against 3 ms per move). That is the case for alpha-beta. Minimax against Minimax: 50.9% ± 1.5%, even.

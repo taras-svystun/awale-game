@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from awale import records
-from awale.agents import AGENTS
+from awale.agents import make_agent
 from awale.engine import Game, Side
 from awale.records import GameRecord
 
@@ -34,7 +34,7 @@ class GameJob:
     number: int  # 1, 2, 3, ...
     opening: tuple[int, ...]  # pits played at random from the start position
     a_side: Side  # the side agent A plays in this game
-    south: str  # agent names, keys of AGENTS
+    south: str  # agent names for make_agent, like "Greedy" or "Minimax:6"
     north: str
     south_seed: int
     north_seed: int
@@ -50,7 +50,7 @@ class GameOutcome:
 
 def play_game(job: GameJob) -> GameOutcome:
     """Play one game. Runs in a worker process, so it builds its own agents from their names."""
-    agents = {Side.SOUTH: AGENTS[job.south](seed=job.south_seed), Side.NORTH: AGENTS[job.north](seed=job.north_seed)}
+    agents = {Side.SOUTH: make_agent(job.south, job.south_seed), Side.NORTH: make_agent(job.north, job.north_seed)}
     game = Game()
     for pit in job.opening:
         game.play(pit)
@@ -199,7 +199,7 @@ def run_tournament(
     workers: int | None = None,
     on_progress: Callable[[int, int], None] | None = None,
 ) -> Tournament:
-    """Play agent A against agent B (names from AGENTS): two games per random opening.
+    """Play agent A against agent B (names for make_agent, like "Greedy" or "Minimax:6"): two games per random opening.
 
     `workers` is the number of processes, all CPU cores by default. With 1, everything runs here.
     `on_progress(done, total)` is called after each game.
