@@ -87,6 +87,14 @@ _Avoid_: Evaluation, strategy, score function
 A method that looks ahead through possible moves to pick one, such as minimax, alpha-beta or MCTS. Search usually uses a heuristic to judge the positions it reaches.
 _Avoid_: Strategy, algorithm
 
+**Depth**:
+How many moves ahead a search looks, counting the moves of both players. Depth 4 is my move, the answer, my next move, and the next answer.
+_Avoid_: Ply, level, horizon
+
+**Time limit**:
+How long an agent may think about one move. An agent with a time limit looks 1 move ahead, then 2, then 3, and so on, and when the time is up it plays the best move of the deepest search it finished.
+_Avoid_: Clock, budget, timeout
+
 **Thoughts**:
 What an agent shows about how it chose its move: the score of each possible move, the line of play it expects, and how much work it did.
 _Avoid_: Brains, debug info, logs

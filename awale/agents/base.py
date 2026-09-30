@@ -21,6 +21,9 @@ class Thoughts:
     line: tuple[int, ...] = ()
     positions: int = 0  # how many positions it looked at
     depth: int = 0  # how many moves ahead it looked
+    # Moves whose score is only an upper bound: the move is worth this score or less.
+    # Alpha-beta can prove that a move is worse than the best one without finding its exact score.
+    upper_bounds: frozenset[int] = frozenset()
 
 
 class Agent(ABC):

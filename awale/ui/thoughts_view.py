@@ -1,7 +1,8 @@
 """The thoughts panel: what an AI agent shows about how it chose its move.
 
 It has a checkbox for each part:
-- move scores, drawn over the pits of the player to move, the chosen move in yellow;
+- move scores, drawn over the pits of the player to move, the chosen move in yellow,
+  and "≤" before a score that is only an upper bound;
 - the expected line of play, in move letters (a-f South, A-F North);
 - the work done: positions looked at, how deep, and how long it took.
 """
@@ -25,11 +26,16 @@ SCORE_WIDTH, SCORE_HEIGHT = 60, 24
 LEFT = 60
 
 
-def score_text(score: float) -> str:
-    """+3, -2 and 0 for whole numbers (like seeds), 0.52 for the rest (like a share of wins)."""
+def score_text(score: float, upper_bound: bool = False) -> str:
+    """+3, -2 and 0 for whole numbers (like seeds), 0.52 for the rest (like a share of wins).
+
+    An upper bound gets a "≤" in front: the move is worth this or less.
+    """
     if float(score).is_integer():
-        return f"{score:+.0f}" if score else "0"
-    return f"{score:.2f}"
+        text = f"{score:+.0f}" if score else "0"
+    else:
+        text = f"{score:.2f}"
+    return f"≤{text}" if upper_bound else text
 
 
 def line_text(first_mover: Side, line: tuple[int, ...]) -> str:
@@ -100,7 +106,8 @@ class ThoughtsPanel:
             badge.center = (pit_center(mover, pit)[0], SCORE_Y[mover])
             pygame.draw.rect(surface, HOVER if chosen else PIT, badge, border_radius=SCORE_HEIGHT // 2)
             color = BUTTON_TEXT_SELECTED if chosen else TEXT
-            blit_centered(surface, self.font, score_text(score), color, badge.center)
+            text = score_text(score, pit in thoughts.upper_bounds)
+            blit_centered(surface, self.font, text, color, badge.center)
 
     def _text(self, surface: pygame.Surface, text: str, y: int) -> None:
         image = self.font.render(text, True, TEXT)

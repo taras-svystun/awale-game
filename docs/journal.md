@@ -141,3 +141,18 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - The default heuristic is still `store`, so `AlphaBeta` still plays exactly like `Minimax` at the same depth.
 - Weighted values are rounded to 6 decimals, since 0.1 × 3 is not exactly 0.3 in binary and equal positions must tie. A test checks that no heuristic can reach the value of a won game.
 - New rule in `CLAUDE.md`: tournaments use AlphaBeta, not Minimax, and Minimax at depth 5 or more needs Taras's OK, because long tournaments heat the laptop.
+
+## Step 10: the Deepening agent (2026-10-01)
+
+**What:** `DeepeningAgent` is AlphaBeta with move ordering, iterative deepening and a time limit. It searches 1 move deep, then 2, then 3, ..., and when its time is up (0.1 s per move by default) it plays the best move of the deepest search it finished. `Deepening:0.5s`, `Deepening:8` and `Deepening:12:1s:mix` set its time, its depth or both. The start menu has `Deepening:mix`. `docs/agents/deepening.md` explains it.
+
+**Why:** Alpha-beta skips more when it tries the best move first, and trying pits left to right is just luck. A fixed depth takes 5 ms in one position and 2 s in another; a time limit is what a person playing it, and a fair tournament, want.
+
+**How:**
+- `ordered_moves` tries first the move that was best in this position in the last, shallower search (`best_moves`, a dict with positions as keys), then the moves that capture most, like Greedy.
+- At the top it uses a narrow window: every move after the first only has to be proved worse than the best so far, and gets an upper bound. Watch shows those scores with "≤". The window starts a hair (`TIE`) below the best score, so a move that ties still gets its exact score, and the random choice between equal moves is the same as AlphaBeta's. Scores never differ by less than 0.000001 because heuristics round to 6 decimals.
+- The narrow window is where most of the saving comes from. We measured the parts one by one: ordering with the widest window at the top saved little, and iterative deepening alone costs more than it saves.
+- When the time is up, `OutOfTime` is raised deep in the search and caught in `think`. It does not start a depth when more than half the time is gone, and stops early when every line ends the game or the game is surely won or lost.
+- At a fixed depth it chooses exactly AlphaBeta's moves: the tests check this on many positions, whole games and a tournament. Tournaments with the same seed give the same results, 1.6 times faster at depth 6 and 2.6 times at depth 8. At depth 10 with `mix` it is almost 5 times faster.
+- With 0.1 s per move, `Deepening:mix` gets 79.0% ± 5.4% of the points against `AlphaBeta:mix` and 64.2% ± 6.5% against `AlphaBeta:8:mix`, which thinks about as long. With 0.4 s it gets 83% against itself at 0.1 s. Time-limited tournaments are not exactly repeatable, since the depth reached depends on how busy the computer is.
+- `Thoughts` has a new `upper_bounds` field. The menu buttons are narrower to fit seven. `CONTEXT.md` now defines depth and time limit.

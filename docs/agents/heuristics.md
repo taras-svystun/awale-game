@@ -182,7 +182,7 @@ Notice that against `store_diff`, `mix` (95.3%) does not score more than `mobili
 - **A better heuristic is worth more than looking two moves further.** `AlphaBeta:4:mix` beats `AlphaBeta` at depth 6 with 82% of the points, while thinking 3.6 times less per move. And `AlphaBeta:mix` at depth 6 beats `AlphaBeta:8` just as clearly, at a third of its time. In step 8, two more moves of depth won about 81%. Here a better guess at the end of the look-ahead wins the same, for less time instead of more.
 - The heuristic is not free: at the same depth `mix` takes about twice as long per move as `store_diff`. That is a good trade, since looking 2 moves deeper costs 3–5 times more.
 
-`AlphaBeta:mix` is now the agent to beat. Step 10 makes it faster with move ordering and gives it a time limit instead of a fixed depth.
+`AlphaBeta:mix` is now the agent to beat. Step 10 makes it faster with move ordering and gives it a time limit instead of a fixed depth: see [deepening.md](deepening.md).
 
 ## In Watch
 

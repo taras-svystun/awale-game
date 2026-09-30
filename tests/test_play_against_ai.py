@@ -9,7 +9,7 @@ import threading
 import pygame
 import pytest
 
-from awale.agents import AGENTS, HEURISTICS, Agent, AlphaBetaAgent, RandomAgent
+from awale.agents import AGENTS, HEURISTICS, Agent, AlphaBetaAgent, DeepeningAgent, RandomAgent
 from awale.engine import Side
 from awale.ui.board_view import HEIGHT, WIDTH, pit_center
 from awale.ui.menu import PERSON, MenuScreen
@@ -172,7 +172,9 @@ def test_the_menu_offers_every_ai_agent_and_every_button_fits_in_the_window():
     menu = MenuScreen()
     window = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
-    assert {name for _, name in menu.player_buttons} == {PERSON, *AGENTS, "AlphaBeta:mix"}
+    # Plain Deepening is left out: with store_diff it is only a quicker AlphaBeta.
+    offered = {PERSON, *(set(AGENTS) - {"Deepening"}), "AlphaBeta:mix", "Deepening:mix"}
+    assert {name for _, name in menu.player_buttons} == offered
     for button in [*menu.player_buttons.values(), *menu.first_buttons.values(), menu.start_button]:
         assert window.contains(button.rect), button.label
         assert menu.font_small.size(button.label)[0] < button.rect.width - 8, button.label  # the name fits
@@ -185,6 +187,13 @@ def test_the_menu_offers_every_ai_agent_and_every_button_fits_in_the_window():
     click(menu, menu.player_buttons[(Side.NORTH, "AlphaBeta:mix")].rect.center)
     screen = press(menu, pygame.K_RETURN)
     assert screen.players[Side.NORTH].heuristic is HEURISTICS["mix"]
+
+    menu = MenuScreen()
+    click(menu, menu.player_buttons[(Side.NORTH, "Deepening:mix")].rect.center)
+    screen = press(menu, pygame.K_RETURN)
+    assert isinstance(screen.players[Side.NORTH], DeepeningAgent)
+    assert screen.players[Side.NORTH].heuristic is HEURISTICS["mix"]
+    assert screen.players[Side.NORTH].time_limit == 0.1
 
 
 def test_back_to_the_menu_keeps_the_choices():

@@ -84,7 +84,7 @@ The window goes **down** the tree: each position gives its children the window i
 - Watch draws a score over every pit. With a narrow window, a worse move would only get "0 or less", not its real score.
 - When several moves share the best value, Minimax picks one of them at random. To pick the same one, AlphaBeta must know exactly which moves tie for the best, and a narrow window cannot tell "equal to 0" from "0 or less".
 
-So every one of our moves gets its exact score, and AlphaBeta's thoughts are exactly Minimax's thoughts: the same move, the same scores, the same expected line. Only the number of positions is different. Below the top, the window narrows as usual. This costs something: a narrow window at the top would look at about a third fewer positions at depth 6. We may come back to it in step 10.
+So every one of our moves gets its exact score, and AlphaBeta's thoughts are exactly Minimax's thoughts: the same move, the same scores, the same expected line. Only the number of positions is different. Below the top, the window narrows as usual. This costs something: a narrow window at the top would look at about a third fewer positions at depth 6. In step 10, [Deepening](deepening.md) uses a narrow window at the top and still finds every move that ties for the best.
 
 **Depth.** Minimax looks 4 moves ahead by default. AlphaBeta looks 6 ahead by default (`DEPTH = 6`), because it can afford to: about 15 ms per move. `AlphaBeta:4` looks 4 ahead, like Minimax, and `AlphaBeta:8` looks 8 ahead.
 
@@ -101,7 +101,7 @@ So every one of our moves gets its exact score, and AlphaBeta's thoughts are exa
 
 The deeper it looks, the more it saves: nothing at depth 2, 2 times fewer positions at depth 4, 7 times at depth 6, 18 times at depth 7, 30 times at depth 8. AlphaBeta at depth 8 is quicker than Minimax at depth 7. There is nothing to skip at depth 2, because every one of our moves gets its exact score, and that needs all of the opponent's answers. The first cuts happen at depth 3.
 
-How much alpha-beta saves depends on the **order** in which it tries the moves. If the best move is tried first, everything after it is cut quickly. If it is tried last, nothing is cut. We try the pits from left to right, which is not a clever order. Move ordering (step 10) tries the most promising moves first, and then alpha-beta can look about twice as deep as Minimax in the same time.
+How much alpha-beta saves depends on the **order** in which it tries the moves. If the best move is tried first, everything after it is cut quickly. If it is tried last, nothing is cut. We try the pits from left to right, which is not a clever order. Move ordering tries the most promising moves first: that is [Deepening](deepening.md), step 10.
 
 ## An example on a real position
 

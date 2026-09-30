@@ -9,7 +9,7 @@ import threading
 import pygame
 import pytest
 
-from awale.agents import Agent, RandomAgent, Thoughts
+from awale.agents import Agent, DeepeningAgent, RandomAgent, Thoughts
 from awale.engine import Game, Position, Side
 from awale.records import load_game
 from awale.ui.board_view import HEIGHT, WIDTH
@@ -175,6 +175,12 @@ def test_scores_are_short():
     assert score_text(0.5234) == "0.52"
 
 
+def test_an_upper_bound_is_shown_with_a_sign():
+    assert score_text(-7, upper_bound=True) == "≤-7"
+    assert score_text(0, upper_bound=True) == "≤0"
+    assert score_text(1.5, upper_bound=True) == "≤1.50"
+
+
 def test_a_finished_watch_game_is_saved(records_in_a_temporary_folder):
     screen = watch(RandomAgent(seed=1), RandomAgent(seed=2))
     while not screen.game.is_over:
@@ -227,6 +233,13 @@ def test_drawing_every_moment_of_a_watch_game():
     for box in screen.thoughts.checkboxes:
         box.checked = False
     screen.draw(surface)  # thoughts all hidden
+
+    deepening_screen = watch(DeepeningAgent(seed=0, depth=4), RandomAgent(seed=2))
+    # The position from docs/agents/greedy.md, where South's pit 6 is clearly the best move.
+    deepening_screen.game = Game(start=Position.setup(south=(5, 5, 5, 5, 0, 1), north=(1, 7, 7, 0, 6, 6)))
+    let_agent_think(deepening_screen)
+    assert deepening_screen.thinking.thoughts.upper_bounds
+    deepening_screen.draw(surface)  # scores that are only upper bounds
 
     random_screen = watch(RandomAgent(seed=1), RandomAgent(seed=2))
     let_agent_think(random_screen)

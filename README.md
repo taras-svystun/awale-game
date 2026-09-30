@@ -22,7 +22,7 @@ Run the second line again after pulling new code, in case new packages were adde
 .venv/bin/awale play
 ```
 
-A start menu opens first. For South and for North, pick Person or an AI agent (Random, Greedy, Minimax, AlphaBeta or AlphaBeta:mix, see [AI agents](#ai-agents)), pick who moves first, and press Start or Enter.
+A start menu opens first. For South and for North, pick Person or an AI agent (Random, Greedy, Minimax, AlphaBeta, AlphaBeta:mix or Deepening:mix, see [AI agents](#ai-agents)), pick who moves first, and press Start or Enter.
 Two people can share the computer, or you can play against an AI. If you pick an AI agent on both sides, Start opens [Watch](#watch) instead. To play on a real wooden board against the AI, set your friend as the Person, type in their moves, and copy the AI's moves onto the board: the line under the title says which pit the AI played.
 
 South sits at the bottom and North at the top. Click a pit in your row, or press 1-6 to play your pit counted from your own left (North's pit 1 is at the top right).
@@ -94,6 +94,18 @@ Put a heuristic's name after a colon to change how an agent judges the positions
 .venv/bin/awale watch AlphaBeta:mix AlphaBeta
 ```
 
+Deepening looks deeper and deeper until its time is up, 0.1 seconds per move unless you give it another time (see [AI agents](#ai-agents)). "Work done" shows how deep it got. It proves most moves worse than its choice without their exact score: those scores have a "≤" in front, meaning "this or less":
+
+```sh
+.venv/bin/awale watch Deepening:mix AlphaBeta:mix
+```
+
+Give it more time with a number of seconds and an "s". With 1 second per move it looks about 12 moves ahead:
+
+```sh
+.venv/bin/awale watch Deepening:1s:mix Deepening:mix
+```
+
 Keys: N starts a new game with the same agents, M goes back to the menu, Esc quits.
 Every finished Watch game is saved as a game record too.
 
@@ -105,12 +117,16 @@ Each agent is explained in its own file in [docs/agents](docs/agents):
 - **Greedy** ([greedy.md](docs/agents/greedy.md)): plays the move that captures the most seeds right now. Beats Random in about 93% of the points.
 - **Minimax** ([minimax.md](docs/agents/minimax.md)): looks 4 moves ahead and expects the opponent to answer with their best move. It judges where it stops by the seeds each player has captured. `Minimax:6` looks 6 moves ahead, `Minimax:2` only 2. Even `Minimax:2` beats Greedy in 99% of the points.
 - **AlphaBeta** ([alphabeta.md](docs/agents/alphabeta.md)): Minimax that skips the lines of play that cannot change its choice. It chooses exactly the same moves as Minimax at the same depth, only much faster, so it can look 6 moves ahead by default. `AlphaBeta:8` looks 8 moves ahead.
+- **Deepening** ([deepening.md](docs/agents/deepening.md)): AlphaBeta that tries the most promising moves first and looks 1, 2, 3, ... moves ahead until its time is up. By default it thinks for 0.1 seconds per move. Give it a time, a depth, or both, and it stops at whichever comes first:
+  - `Deepening:0.5s` thinks for half a second per move;
+  - `Deepening:8` always looks 8 moves ahead, with no time limit. It then chooses exactly the moves `AlphaBeta:8` chooses, only faster;
+  - `Deepening:12:1s` stops at 12 moves ahead or after 1 second.
 
-In the start menu, Minimax always looks 4 moves ahead and AlphaBeta 6, and AlphaBeta:mix is AlphaBeta with the `mix` heuristic. On the command line (`watch` and `tournament`) you can set their depth and heuristic.
+In the start menu, Minimax always looks 4 moves ahead and AlphaBeta 6, AlphaBeta:mix is AlphaBeta with the `mix` heuristic, and Deepening:mix is Deepening with `mix` and 0.1 seconds per move. On the command line (`watch` and `tournament`) you can set their depth, heuristic and time.
 
 ### Heuristics
 
-Minimax and AlphaBeta look ahead, then judge the positions where they stop with a heuristic ([heuristics.md](docs/agents/heuristics.md)). Put its name after a colon, before or after the depth: `AlphaBeta:mix`, `AlphaBeta:8:mix`, `Minimax:4:mobility`.
+Minimax, AlphaBeta and Deepening look ahead, then judge the positions where they stop with a heuristic ([heuristics.md](docs/agents/heuristics.md)). Put its name after a colon, before or after the depth: `AlphaBeta:mix`, `AlphaBeta:8:mix`, `Minimax:4:mobility`, `Deepening:0.5s:mix`.
 
 - `store` (the default): my store minus the opponent's, the seeds captured so far.
 - `mix`: `store`, plus half a seed for each pit I can play more than the opponent, plus a tenth of a seed for each seed more in my row. The strongest: AlphaBeta with `mix` wins about 95% of the points against AlphaBeta with `store` at the same depth, and even `AlphaBeta:4:mix` beats plain `AlphaBeta` at depth 6.
@@ -189,6 +205,19 @@ AlphaBeta with `mix` against plain AlphaBeta at the default depth 6 (500 games, 
 .venv/bin/awale tournament AlphaBeta:mix AlphaBeta --openings 250 --seed 1 --workers 4
 ```
 
+Deepening at a fixed depth plays exactly the same games as AlphaBeta at that depth, only faster. With the same `--seed`, these two print the same wins, draws, losses and seeds, and Deepening's time per move is about 2.6 times smaller (about 10 minutes each):
+
+```sh
+.venv/bin/awale tournament AlphaBeta:8:mix AlphaBeta:mix --openings 250 --seed 1 --workers 4
+.venv/bin/awale tournament Deepening:8:mix AlphaBeta:mix --openings 250 --seed 1 --workers 4
+```
+
+Deepening with 0.1 seconds per move against AlphaBeta at depth 8, which thinks about as long (200 games, about 8 minutes). With a time limit the results change a little from run to run, even with the same `--seed`, because how deep Deepening gets depends on how busy the computer is:
+
+```sh
+.venv/bin/awale tournament Deepening:mix AlphaBeta:8:mix --openings 100 --seed 1 --workers 4
+```
+
 Save every game in a CSV file in `records/tournaments` (the last 10 tournaments are kept):
 
 ```sh
@@ -249,7 +278,7 @@ Only the quick rule tests, without OpenSpiel:
 Only the agents' tests:
 
 ```sh
-.venv/bin/pytest tests/test_agents.py tests/test_random_agent.py tests/test_greedy_agent.py tests/test_minimax_agent.py tests/test_alphabeta_agent.py tests/test_heuristics.py
+.venv/bin/pytest tests/test_agents.py tests/test_random_agent.py tests/test_greedy_agent.py tests/test_minimax_agent.py tests/test_alphabeta_agent.py tests/test_heuristics.py tests/test_deepening_agent.py
 ```
 
 Only the Watch window tests:
