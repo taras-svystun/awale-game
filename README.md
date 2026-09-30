@@ -14,6 +14,19 @@ python3 -m venv .venv
 .venv/bin/pip install -e ".[dev]"
 ```
 
+Run the second line again after pulling new code, in case new packages were added.
+
+## Play
+
+Two people on one computer:
+
+```sh
+.venv/bin/awale play
+```
+
+South sits at the bottom and North at the top. Click a pit in your row, or press 1-6 to play your pit counted from your own left (North's pit 1 is at the top right).
+Pits you cannot play are dimmed. The orange ring shows the last move. N starts a new game, Esc quits.
+
 ## Run the tests
 
 ```sh
@@ -30,7 +43,7 @@ Only the quick rule tests, without OpenSpiel:
 
 ## Try the engine in Python
 
-There is no window yet (that is step 2). You can already play in a Python shell:
+You can also play without a window, in a Python shell:
 
 ```sh
 .venv/bin/python

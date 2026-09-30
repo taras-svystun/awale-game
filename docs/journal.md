@@ -20,3 +20,16 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - We wrote the tests first, one rule at a time, on small positions worked out by hand: sowing, skipping a pit with 12+ seeds, capture chains, grand slam, feeding, end of game, undo.
 - Then we played 2000 random games in our engine and in OpenSpiel side by side and compared every move. Those games include 129 grand slams, 182 repetitions and more than 1000 feeding positions, so even the rare rules are checked.
 - The comparison found one difference, and we changed our rules to match OpenSpiel: when a game ends because someone reached 25, the seeds left on the board also go to the owner of each row. The winner stays the same, but the final score now always adds up to 48.
+
+## Step 2: Play for two people (2026-09-30)
+
+**What:** `awale play` opens a Pygame window where two people take turns on one computer. You click a pit or press 1-6. Pits you cannot play are dimmed, the last move has an orange ring, and captures and the final result are shown at the top.
+
+**Why:** It is the first way to actually play the game, and the window code is the base for Play against AI and Watch later.
+
+**How:**
+- `awale/ui/board_view.py` knows where each pit is on the screen and draws the board. North's pit 1 is at the top right, so sowing goes counter-clockwise on the screen, as on a real board.
+- `awale/ui/play.py` turns clicks and keys into moves on the engine's `Game`. Only this folder imports Pygame.
+- `awale/cli.py` is the `awale` command, with one subcommand per way to use the game. Only `play` exists for now.
+- The tests send fake clicks and key presses to the window with no real screen (SDL's "dummy" video driver).
+- Undo and the start menu come in step 3, together with Play against AI.

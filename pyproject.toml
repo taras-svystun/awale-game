@@ -3,18 +3,21 @@ name = "awale"
 version = "0.1.0"
 description = "Awalé on your computer: play people or AI, and build AI agents."
 requires-python = ">=3.11"
-dependencies = []
+dependencies = ["pygame>=2.5"]
 
 [project.optional-dependencies]
 # Only needed to run the tests. OpenSpiel is our reference for the rules.
 dev = ["pytest", "open_spiel"]
+
+[project.scripts]
+awale = "awale.cli:main"
 
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["awale"]
+packages = ["awale", "awale.ui"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
