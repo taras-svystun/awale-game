@@ -12,6 +12,8 @@ A local Awalé game in Python (Pygame) for playing people and AI agents, and a l
 
 Taras knows Python well and is new to AI-assisted coding. Reply to him in Ukrainian. Write everything in the repo (code, comments, docs, commits) in plain, simple English, so it reads like he wrote it.
 
+Tournaments heat up Taras's laptop. For search agents in tournaments, use AlphaBeta, not Minimax: it plays the same moves for far less work. Ask Taras before running any tournament with `Minimax:5` or deeper.
+
 AI agents are a shared lesson. I write every agent, with its tests and Tournament wiring. For each one I explain it to Taras in detail and in simple words: the idea behind it, how the code works step by step, and why it plays the way it does. Taras reads, asks questions and experiments with it.
 
 ## Finishing a step
