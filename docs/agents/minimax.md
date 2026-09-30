@@ -101,7 +101,7 @@ def store_diff(position: Position, me: Side) -> int:
     return position.store(me) - position.store(me.opponent)
 ```
 
-It is a separate function, not part of Minimax, because a heuristic and a search are two different things. In step 9 we write better heuristics and give them to the same search: `MinimaxAgent(heuristic=...)`.
+It is a separate function, not part of Minimax, because a heuristic and a search are two different things. In step 9 we wrote better heuristics and gave them to the same search: `MinimaxAgent(heuristic=...)`, or `Minimax:mix` by name. See [heuristics.md](heuristics.md).
 
 **Depth in the name.** `Minimax` looks 4 moves ahead. On the command line, `Minimax:6` looks 6 ahead and `Minimax:2` only 2. `make_agent` in `awale/agents/__init__.py` reads the name, and the name with its depth goes into game records.
 

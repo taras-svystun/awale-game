@@ -5,7 +5,7 @@ import sys
 
 import pytest
 
-from awale.agents import Agent, GreedyAgent, MinimaxAgent, RandomAgent, Thoughts, make_agent
+from awale.agents import HEURISTICS, Agent, GreedyAgent, MinimaxAgent, RandomAgent, Thoughts, make_agent
 from awale.engine import Position
 
 
@@ -55,7 +55,18 @@ def test_make_agent_sets_the_depth_of_a_search_agent():
     assert deep.name == "Minimax:6"  # shown in the window and written in game records
 
 
-@pytest.mark.parametrize("name", ["Nobody", "Greedy:3", "Minimax:0", "Minimax:deep", "Minimax:"])
+def test_make_agent_sets_the_heuristic_of_a_search_agent():
+    default, store, deep = make_agent("AlphaBeta"), make_agent("AlphaBeta:store"), make_agent("AlphaBeta:8:store")
+
+    assert default.heuristic is store.heuristic is deep.heuristic is HEURISTICS["store"]
+    assert (store.depth, deep.depth) == (6, 8)
+    assert make_agent("AlphaBeta:store:8").depth == 8  # any order
+
+
+@pytest.mark.parametrize(
+    "name",
+    ["Nobody", "Greedy:3", "Greedy:store", "Minimax:0", "Minimax:deep", "Minimax:", "Minimax:3:4", "Minimax:store:store"],
+)
 def test_make_agent_refuses_a_name_it_does_not_know(name):
     with pytest.raises(ValueError):
         make_agent(name)

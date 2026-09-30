@@ -206,4 +206,4 @@ This is the promise of step 8 kept on thousands of real games: the same moves, 2
 - **AlphaBeta against itself is even**, 50.2% ± 2.1%, so the tournament is fair to it. About 10% of these games are draws.
 - These tournaments take longer than the time per move suggests, because games between two careful players last much longer: about 125 moves for AlphaBeta against Minimax and 150 for AlphaBeta against itself, but only about 40 against Greedy, which loses its seeds quickly.
 
-AlphaBeta at depth 6 is now the agent to beat, and step 9 will give it better heuristics than `store_diff`.
+AlphaBeta at depth 6 is now the agent to beat. In step 9 it got better heuristics than `store_diff`: see [heuristics.md](heuristics.md).

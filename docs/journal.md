@@ -127,3 +127,17 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - From the start position it looks at 7 times fewer positions than Minimax at depth 6, and 30 times fewer at depth 8. In tournaments with the same seed it plays exactly Minimax's games: `AlphaBeta:6` and `Minimax:6` against Greedy both win 497, draw 2 and lose 1, at 14 ms and 95 ms per move.
 - The saved time buys depth: `AlphaBeta:8` against `Minimax:6`, with about the same time per move, gets 81.0% ± 3.3% of the points. AlphaBeta against itself: 50.2% ± 2.1%, even.
 - The start menu now has five agents in a row, so the buttons are narrower.
+
+## Step 9: better heuristics (2026-10-01)
+
+**What:** Four board features in `awale/agents/heuristics.py`: seeds in my row, weak pits with 1–2 seeds, mobility (pits I can play) and big pits with 12+ seeds. `weighted` adds them to `store_diff` with weights. Minimax and AlphaBeta take a heuristic by name after a colon: `AlphaBeta:mix`, `AlphaBeta:8:mix`. The start menu has an `AlphaBeta:mix` button. `docs/agents/heuristics.md` explains it all.
+
+**Why:** Most positions where the search stops are quiet, and `store_diff` scores them all the same, so the search picks among them at random. A heuristic that looks at the board can tell them apart.
+
+**How:**
+- Each feature is "mine minus the opponent's". Tournaments at depth 4 (1000 games, `--workers 4`) chose the weights. Mobility alone at 0.5 wins 96.6% of the points against `store_diff`; seeds in my row help only with a small weight (0.1: 87.6%). Weak pits hurt with the sign we expected, and big pits changed nothing, so both are left out of `mix`.
+- `mix` = `store_diff` + 0.5 × mobility + 0.1 × row seeds. It beats mobility alone 67.2% ± 2.8%. What it learned: do not feed the opponent, keep its empty pits empty.
+- At depth 6, `AlphaBeta:mix` wins 95.5% ± 1.7% against `AlphaBeta`. Even `AlphaBeta:4:mix` beats `AlphaBeta` at depth 6 (82.2%) with 3.6 times less time per move, and `AlphaBeta:mix` beats `AlphaBeta:8` (82.0%).
+- The default heuristic is still `store`, so `AlphaBeta` still plays exactly like `Minimax` at the same depth.
+- Weighted values are rounded to 6 decimals, since 0.1 × 3 is not exactly 0.3 in binary and equal positions must tie. A test checks that no heuristic can reach the value of a won game.
+- New rule in `CLAUDE.md`: tournaments use AlphaBeta, not Minimax, and Minimax at depth 5 or more needs Taras's OK, because long tournaments heat the laptop.

@@ -7,7 +7,7 @@ from awale.agents.heuristics import store_diff
 from awale.engine import Position, Side
 
 DEPTH = 4
-# A won game is worth more than any heuristic score: store_diff is never more than 48.
+# A won game is worth more than any heuristic score (tests/test_heuristics.py checks every heuristic).
 WIN = 100
 
 

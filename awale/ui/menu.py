@@ -11,8 +11,10 @@ from awale.ui.watch import WatchScreen
 from awale.ui.widgets import Button, blit_centered
 
 ROW_Y = {Side.SOUTH: 190, Side.NORTH: 260, "first": 330}
-LABEL_RIGHT, OPTIONS_X = 220, 250
-OPTION_WIDTH, OPTION_GAP, OPTION_HEIGHT = 128, 12, 46
+LABEL_RIGHT, OPTIONS_X = 175, 190
+OPTION_WIDTH, OPTION_GAP, OPTION_HEIGHT = 128, 7, 46
+# Every agent, plus AlphaBeta with the best heuristic we have (see make_agent for these names).
+MENU_AGENTS = [*AGENTS, "AlphaBeta:mix"]
 
 
 def option_rect(row, i: int) -> pygame.Rect:
@@ -27,10 +29,11 @@ class MenuScreen:
         self.hover: tuple[int, int] | None = None
         self.font_title = pygame.font.Font(None, 72)
         self.font = pygame.font.Font(None, 30)
+        self.font_small = pygame.font.Font(None, 24)  # so the longest agent name fits on its button
         self.player_buttons = {
             (side, name): Button(option_rect(side, i), name)
             for side in Side
-            for i, name in enumerate([PERSON, *AGENTS])
+            for i, name in enumerate([PERSON, *MENU_AGENTS])
         }
         self.first_buttons = {side: Button(option_rect("first", i), side.name.title()) for i, side in enumerate(Side)}
         self.start_button = Button(pygame.Rect((WIDTH - 220) // 2, 410, 220, 54), "Start (Enter)")
@@ -81,7 +84,7 @@ class MenuScreen:
             image = self.font.render(label, True, TEXT_SOFT)
             surface.blit(image, image.get_rect(midright=(LABEL_RIGHT, ROW_Y[row])))
         for (side, name), button in self.player_buttons.items():
-            button.draw(surface, self.font, self.hover, selected=self.choices[side] == name)
+            button.draw(surface, self.font_small, self.hover, selected=self.choices[side] == name)
         for side, button in self.first_buttons.items():
             button.draw(surface, self.font, self.hover, selected=self.first is side)
         self.start_button.draw(surface, self.font, self.hover)

@@ -22,7 +22,7 @@ Run the second line again after pulling new code, in case new packages were adde
 .venv/bin/awale play
 ```
 
-A start menu opens first. For South and for North, pick Person or an AI agent (Random, Greedy, Minimax or AlphaBeta, see [AI agents](#ai-agents)), pick who moves first, and press Start or Enter.
+A start menu opens first. For South and for North, pick Person or an AI agent (Random, Greedy, Minimax, AlphaBeta or AlphaBeta:mix, see [AI agents](#ai-agents)), pick who moves first, and press Start or Enter.
 Two people can share the computer, or you can play against an AI. If you pick an AI agent on both sides, Start opens [Watch](#watch) instead. To play on a real wooden board against the AI, set your friend as the Person, type in their moves, and copy the AI's moves onto the board: the line under the title says which pit the AI played.
 
 South sits at the bottom and North at the top. Click a pit in your row, or press 1-6 to play your pit counted from your own left (North's pit 1 is at the top right).
@@ -88,6 +88,12 @@ AlphaBeta looks 6 moves ahead unless you give it a depth, and is still quick at 
 .venv/bin/awale watch AlphaBeta:8 AlphaBeta
 ```
 
+Put a heuristic's name after a colon to change how an agent judges the positions where it stops looking (see [Heuristics](#heuristics)). `AlphaBeta:mix` gives moves different scores where plain AlphaBeta sees them all the same:
+
+```sh
+.venv/bin/awale watch AlphaBeta:mix AlphaBeta
+```
+
 Keys: N starts a new game with the same agents, M goes back to the menu, Esc quits.
 Every finished Watch game is saved as a game record too.
 
@@ -100,7 +106,15 @@ Each agent is explained in its own file in [docs/agents](docs/agents):
 - **Minimax** ([minimax.md](docs/agents/minimax.md)): looks 4 moves ahead and expects the opponent to answer with their best move. It judges where it stops by the seeds each player has captured. `Minimax:6` looks 6 moves ahead, `Minimax:2` only 2. Even `Minimax:2` beats Greedy in 99% of the points.
 - **AlphaBeta** ([alphabeta.md](docs/agents/alphabeta.md)): Minimax that skips the lines of play that cannot change its choice. It chooses exactly the same moves as Minimax at the same depth, only much faster, so it can look 6 moves ahead by default. `AlphaBeta:8` looks 8 moves ahead.
 
-In the start menu, Minimax always looks 4 moves ahead and AlphaBeta 6. On the command line (`watch` and `tournament`) you can set their depth.
+In the start menu, Minimax always looks 4 moves ahead and AlphaBeta 6, and AlphaBeta:mix is AlphaBeta with the `mix` heuristic. On the command line (`watch` and `tournament`) you can set their depth and heuristic.
+
+### Heuristics
+
+Minimax and AlphaBeta look ahead, then judge the positions where they stop with a heuristic ([heuristics.md](docs/agents/heuristics.md)). Put its name after a colon, before or after the depth: `AlphaBeta:mix`, `AlphaBeta:8:mix`, `Minimax:4:mobility`.
+
+- `store` (the default): my store minus the opponent's, the seeds captured so far.
+- `mix`: `store`, plus half a seed for each pit I can play more than the opponent, plus a tenth of a seed for each seed more in my row. The strongest: AlphaBeta with `mix` wins about 95% of the points against AlphaBeta with `store` at the same depth, and even `AlphaBeta:4:mix` beats plain `AlphaBeta` at depth 6.
+- `seeds`, `weak`, `mobility`, `big`: `store` plus one board feature each (seeds in my row, pits with 1–2 seeds, pits I can play, pits with 12+ seeds), to test each feature alone.
 
 ## Tournament
 
@@ -150,6 +164,29 @@ AlphaBeta (6 moves ahead) against Minimax (4 moves ahead), about 1.5 minutes:
 
 ```sh
 .venv/bin/awale tournament AlphaBeta Minimax
+```
+
+A tournament uses every CPU core, and a long one can make a laptop hot. `--workers 4` uses only 4 processes: it takes about twice as long, but the laptop stays cooler.
+
+AlphaBeta with the `mix` heuristic against plain AlphaBeta, both 4 moves ahead (about half a minute):
+
+```sh
+.venv/bin/awale tournament AlphaBeta:4:mix AlphaBeta:4 --seed 1 --workers 4
+```
+
+Each board feature alone against plain AlphaBeta (see [heuristics.md](docs/agents/heuristics.md) for what they show):
+
+```sh
+.venv/bin/awale tournament AlphaBeta:4:seeds AlphaBeta:4 --seed 1 --workers 4
+.venv/bin/awale tournament AlphaBeta:4:weak AlphaBeta:4 --seed 1 --workers 4
+.venv/bin/awale tournament AlphaBeta:4:mobility AlphaBeta:4 --seed 1 --workers 4
+.venv/bin/awale tournament AlphaBeta:4:big AlphaBeta:4 --seed 1 --workers 4
+```
+
+AlphaBeta with `mix` against plain AlphaBeta at the default depth 6 (500 games, about 2 minutes):
+
+```sh
+.venv/bin/awale tournament AlphaBeta:mix AlphaBeta --openings 250 --seed 1 --workers 4
 ```
 
 Save every game in a CSV file in `records/tournaments` (the last 10 tournaments are kept):
@@ -212,7 +249,7 @@ Only the quick rule tests, without OpenSpiel:
 Only the agents' tests:
 
 ```sh
-.venv/bin/pytest tests/test_agents.py tests/test_random_agent.py tests/test_greedy_agent.py tests/test_minimax_agent.py tests/test_alphabeta_agent.py
+.venv/bin/pytest tests/test_agents.py tests/test_random_agent.py tests/test_greedy_agent.py tests/test_minimax_agent.py tests/test_alphabeta_agent.py tests/test_heuristics.py
 ```
 
 Only the Watch window tests:

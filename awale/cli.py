@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from awale.agents import AGENTS, SEARCH_AGENTS, make_agent
+from awale.agents import AGENTS, HEURISTICS, SEARCH_AGENTS, make_agent
 from awale.engine import Side
 from awale.tournament import OPENING_MOVES, OPENINGS, run_tournament
 
@@ -19,7 +19,8 @@ def agent_name(name: str) -> str:
 
 AGENT_NAMES = (
     f"one of {', '.join(AGENTS)}; "
-    f"{' and '.join(sorted(SEARCH_AGENTS))} can also take a depth, like Minimax:6"
+    f"{' and '.join(sorted(SEARCH_AGENTS))} can also take a depth and a heuristic "
+    f"({', '.join(HEURISTICS)}), like AlphaBeta:8 or AlphaBeta:8:mix"
 )
 
 

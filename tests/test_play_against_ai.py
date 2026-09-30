@@ -9,7 +9,7 @@ import threading
 import pygame
 import pytest
 
-from awale.agents import AGENTS, Agent, AlphaBetaAgent, RandomAgent
+from awale.agents import AGENTS, HEURISTICS, Agent, AlphaBetaAgent, RandomAgent
 from awale.engine import Side
 from awale.ui.board_view import HEIGHT, WIDTH, pit_center
 from awale.ui.menu import PERSON, MenuScreen
@@ -172,13 +172,19 @@ def test_the_menu_offers_every_ai_agent_and_every_button_fits_in_the_window():
     menu = MenuScreen()
     window = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
-    assert {name for _, name in menu.player_buttons} == {PERSON, *AGENTS}
+    assert {name for _, name in menu.player_buttons} == {PERSON, *AGENTS, "AlphaBeta:mix"}
     for button in [*menu.player_buttons.values(), *menu.first_buttons.values(), menu.start_button]:
         assert window.contains(button.rect), button.label
+        assert menu.font_small.size(button.label)[0] < button.rect.width - 8, button.label  # the name fits
 
     click(menu, menu.player_buttons[(Side.NORTH, "AlphaBeta")].rect.center)
     screen = press(menu, pygame.K_RETURN)
     assert isinstance(screen.players[Side.NORTH], AlphaBetaAgent)
+
+    menu = MenuScreen()
+    click(menu, menu.player_buttons[(Side.NORTH, "AlphaBeta:mix")].rect.center)
+    screen = press(menu, pygame.K_RETURN)
+    assert screen.players[Side.NORTH].heuristic is HEURISTICS["mix"]
 
 
 def test_back_to_the_menu_keeps_the_choices():
