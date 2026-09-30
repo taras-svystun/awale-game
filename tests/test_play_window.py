@@ -79,7 +79,7 @@ def test_a_capture_is_shown_in_the_message(screen):
 
     press(screen, pygame.K_6)  # makes North's pits 1 and 2 hold 2 and 3
 
-    assert screen.message == "South captured 5 seeds."
+    assert screen.message == "South played pit 6 and captured 5 seeds."
 
 
 def test_status_shows_the_winner_and_n_starts_a_new_game(screen):
@@ -103,3 +103,17 @@ def test_drawing_works_during_and_after_a_game(screen):
     screen.game = Game(start=Position.setup(south=(0, 0, 0, 0, 0, 2), north=(4, 1, 4, 4, 4, 4), stores=(23, 0)))
     press(screen, pygame.K_6)
     screen.draw(surface)
+
+
+def test_undo_between_two_people_takes_back_one_move(screen):
+    press(screen, pygame.K_3)
+    press(screen, pygame.K_4)
+
+    press(screen, pygame.K_u)
+    assert screen.game.moves == [3]
+
+    screen.handle(pygame.event.Event(pygame.MOUSEBUTTONDOWN, pos=screen.undo_button.rect.center, button=1))
+    assert screen.game.moves == []
+
+    press(screen, pygame.K_u)  # nothing left to undo
+    assert screen.game.moves == []

@@ -12,7 +12,7 @@ import pygame
 
 from awale.engine import PITS_PER_ROW, Position, Side
 
-WIDTH, HEIGHT = 1000, 520
+WIDTH, HEIGHT = 1000, 560
 
 BOARD = pygame.Rect(40, 90, 920, 340)
 PIT_RADIUS = 50

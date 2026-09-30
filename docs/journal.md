@@ -33,3 +33,17 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - `awale/cli.py` is the `awale` command, with one subcommand per way to use the game. Only `play` exists for now.
 - The tests send fake clicks and key presses to the window with no real screen (SDL's "dummy" video driver).
 - Undo and the start menu come in step 3, together with Play against AI.
+
+## Step 3, part 1: agents and Play against AI (2026-09-30)
+
+**What:** The start menu, Play against an AI agent, and Undo. The `Agent` interface and an empty `RandomAgent`, with its tests ready. Taras writes `RandomAgent.choose_move` in part 2, which finishes the step.
+
+**Why:** Every AI we build later (Greedy, Minimax, alpha-beta, MCTS) plugs into the same `Agent` interface, so the window, Watch and Tournament never need to know how an agent thinks. Taras writes the first agents himself to learn the ideas, so the code around them is ready first.
+
+**How:**
+- `awale/agents/` has `Agent`, with one method: `choose_move(position)` returns a pit 1-6. `AGENTS` lists the agents the menu can offer. This folder never imports Pygame, and a test checks that.
+- The AI thinks in a background thread (`awale/ui/agent_thread.py`), so the window keeps drawing. Its move waits at least 0.7 seconds, so you can see your own move land first. If the agent crashes, the error is raised in the window instead of the game waiting forever.
+- Undo goes back to the last position where a person was to move. Between two people that is one move. Against an AI it takes back the AI's move and yours. If the AI is still thinking, its answer is thrown away.
+- `awale/ui/menu.py` is the start menu. It does not start a game with no person, because AI against AI is Watch (step 5).
+- `Game.positions` is new: every position so far, which Undo needs.
+- The window tests use small fake agents (one always plays its leftmost pit, one waits until the test lets it answer), so they do not depend on Random.

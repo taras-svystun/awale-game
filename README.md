@@ -18,14 +18,17 @@ Run the second line again after pulling new code, in case new packages were adde
 
 ## Play
 
-Two people on one computer:
-
 ```sh
 .venv/bin/awale play
 ```
 
+A start menu opens first. For South and for North, pick Person or an AI agent (only Random for now), pick who moves first, and press Start or Enter.
+Two people can share the computer, or you can play against an AI. To play on a real wooden board against the AI, set your friend as the Person, type in their moves, and copy the AI's moves onto the board: the line under the title says which pit the AI played.
+
 South sits at the bottom and North at the top. Click a pit in your row, or press 1-6 to play your pit counted from your own left (North's pit 1 is at the top right).
-Pits you cannot play are dimmed. The orange ring shows the last move. N starts a new game, Esc quits.
+Pits you cannot play are dimmed. The orange ring shows the last move.
+
+Keys: U or Backspace undoes (one move between two people, or back to your last turn against an AI), N starts a new game with the same players, M goes back to the menu, Esc quits.
 
 ## Run the tests
 
@@ -40,6 +43,14 @@ Only the quick rule tests, without OpenSpiel:
 ```sh
 .venv/bin/pytest tests/test_position.py tests/test_game.py
 ```
+
+Only the Random agent's tests:
+
+```sh
+.venv/bin/pytest tests/test_random_agent.py
+```
+
+They are skipped until `RandomAgent.choose_move` in `awale/agents/random_agent.py` is written. To turn them on, delete the `pytestmark = ...` line at the top of the test file.
 
 ## Try the engine in Python
 

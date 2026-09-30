@@ -128,6 +128,11 @@ class Game:
         return self._positions[-1]
 
     @property
+    def positions(self) -> tuple[Position, ...]:
+        """Every position so far, from the start to now. `positions[k]` is the position after k moves."""
+        return tuple(self._positions)
+
+    @property
     def is_over(self) -> bool:
         return self.result is not None
 
