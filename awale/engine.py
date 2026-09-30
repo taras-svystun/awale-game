@@ -98,6 +98,13 @@ class Position:
             stores[self.to_move.value] += captured
         return Position(tuple(board), (stores[0], stores[1]), self.to_move.opponent)
 
+    def ends_game(self) -> bool:
+        """True if the game ends here: a store has 25 seeds, or the player to move has no legal move.
+
+        A repetition also ends a game, but a Position does not know the earlier positions, so only Game checks that.
+        """
+        return max(self.stores) >= WINNING_STORE or not self.legal_moves()
+
     def with_rows_collected(self) -> "Position":
         """Each player moves the seeds left in their own row to their store. Used when the game ends."""
         south, north = sum(self.pits(Side.SOUTH)), sum(self.pits(Side.NORTH))
@@ -148,10 +155,9 @@ class Game:
         if self.is_over:
             raise ValueError("The game is over")
         position = self.position.play(pit)
-        won = max(position.stores) >= WINNING_STORE
         # A full Position includes the stores, so a match here also means nothing was captured since.
         repeated = position in self._positions
-        ended = won or repeated or not position.legal_moves()
+        ended = position.ends_game() or repeated
         if ended:
             # However the game ends, the seeds left on the board go to the owner of each row.
             position = position.with_rows_collected()
