@@ -23,7 +23,7 @@ class RandomAgent(Agent):
         return self.rng.choice(position.legal_moves())
 ```
 
-- `Agent` is the interface every agent follows (`awale/agents/base.py`). The window, Watch and Tournament only call `choose_move`, so they work with any agent.
+- `Agent` is the interface every agent follows (`awale/agents/base.py`). An agent writes one of two methods: `choose_move`, which returns just the move, or `think`, which returns the move with its thoughts. Each is built from the other, so the window, Watch and Tournament work with any agent. Random has nothing to show, so it writes only `choose_move`.
 - `position.legal_moves()` already knows all the rules: empty pits are left out, and when the opponent's row is empty, only moves that feed them are left. So Random can never play an illegal move, and it does not need to know the rules itself.
 - `self.rng` is the agent's own random generator. Every agent gets one from `Agent`, because later agents (MCTS) use chance too. We do not use the shared `random` module, for two reasons:
   - **Repeatable games.** `RandomAgent(seed=1)` always plays the same moves in the same positions. If a game shows a bug, we can play it again exactly. A tournament gives every agent its own seed, so `--seed` repeats a whole tournament.
@@ -50,6 +50,14 @@ When there is only one legal move, Random plays it, like everyone else. In the f
 ```
 South: 2 0 0 0 0 1     North: 0 0 0 0 0 0
 ```
+
+## In Watch
+
+```sh
+.venv/bin/awale watch Random Random
+```
+
+Random writes only `choose_move`, so `Agent.think` wraps its move in `Thoughts(move)` with nothing else. The thoughts panel then says "Random gives no move scores" where the scores would be, "Expected line: Random does not give one", and "Work done: 0 positions, depth 0, 5 µs". That is honest: Random looks at no positions and no moves ahead. The few microseconds are the time to list the legal moves and pick one.
 
 ## What the tests check
 

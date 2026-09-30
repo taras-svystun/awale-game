@@ -23,7 +23,7 @@ Run the second line again after pulling new code, in case new packages were adde
 ```
 
 A start menu opens first. For South and for North, pick Person or an AI agent (only Random for now), pick who moves first, and press Start or Enter.
-Two people can share the computer, or you can play against an AI. To play on a real wooden board against the AI, set your friend as the Person, type in their moves, and copy the AI's moves onto the board: the line under the title says which pit the AI played.
+Two people can share the computer, or you can play against an AI. If you pick an AI agent on both sides, Start opens [Watch](#watch) instead. To play on a real wooden board against the AI, set your friend as the Person, type in their moves, and copy the AI's moves onto the board: the line under the title says which pit the AI played.
 
 South sits at the bottom and North at the top. Click a pit in your row, or press 1-6 to play your pit counted from your own left (North's pit 1 is at the top right).
 Pits you cannot play are dimmed. The orange ring shows the last move.
@@ -31,6 +31,37 @@ Pits you cannot play are dimmed. The orange ring shows the last move.
 Keys: U or Backspace undoes (one move between two people, or back to your last turn against an AI), N starts a new game with the same players, M goes back to the menu, Esc quits.
 
 Every finished game is saved as a game record in `records/games` (see [Game records](#game-records) below).
+
+## Watch
+
+Watch two AI agents play each other, move by move, with their thoughts next to the board:
+
+```sh
+.venv/bin/awale watch Random Random
+```
+
+The first name plays South (at the bottom), the second North (at the top). South moves first; to let North move first:
+
+```sh
+.venv/bin/awale watch Random Random --first north
+```
+
+You can also get here from the start menu of `awale play`: pick an AI agent for both South and North, then Start.
+
+Each agent first thinks about the position on the board and shows its thoughts, then plays its move after a short wait.
+
+- Pause (Space or P) stops the game; press it again to go on.
+- Step (S or the right arrow) pauses and plays just the next move.
+- Speed: drag the knob from 3 seconds per move (left) to 0.1 seconds per move (right).
+- The thoughts panel has a checkbox for each part:
+  - Move scores: a score over each pit the agent may play, higher is better for it. Its choice is in yellow.
+  - Expected line: the moves it expects next, in move letters (a-f South, A-F North).
+  - Work done: how many positions it looked at, how many moves ahead, and how long it took.
+
+Random does not look ahead, so it has no scores and no line, and its work is 0 positions. Greedy (step 6) and Minimax (step 7) will fill them in.
+
+Keys: N starts a new game with the same agents, M goes back to the menu, Esc quits.
+Every finished Watch game is saved as a game record too.
 
 ## Tournament
 
@@ -69,7 +100,7 @@ All options:
 
 ## Game records
 
-The last 100 Play games are saved in `records/games`, one JSON file per game, named by the time the game ended.
+The last 100 Play and Watch games are saved in `records/games`, one JSON file per game, named by the time the game ended.
 Moves are written a-f for South's pits 1-6 and A-F for North's pits 1-6, so `c D` means South played its pit 3, then North its pit 4.
 
 See the newest game:
@@ -116,6 +147,12 @@ Only the Random agent's tests:
 
 ```sh
 .venv/bin/pytest tests/test_random_agent.py
+```
+
+Only the Watch window tests:
+
+```sh
+.venv/bin/pytest tests/test_watch.py
 ```
 
 Only the tournament and game record tests:

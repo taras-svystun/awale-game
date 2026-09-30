@@ -4,6 +4,7 @@ import argparse
 import sys
 
 from awale.agents import AGENTS
+from awale.engine import Side
 from awale.tournament import OPENING_MOVES, OPENINGS, run_tournament
 
 
@@ -11,6 +12,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(prog="awale", description="Awalé: play people or AI, and compare AI agents.")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("play", help="Open a window to play: two people on one computer, or a person against an AI.")
+
+    watch = commands.add_parser(
+        "watch",
+        help="Open a window where two AI agents play each other, with their thoughts next to the board.",
+    )
+    watch.add_argument("south", choices=list(AGENTS), help="the agent playing South (at the bottom)")
+    watch.add_argument("north", choices=list(AGENTS), help="the agent playing North (at the top)")
+    watch.add_argument("--first", choices=["south", "north"], default="south", help="who moves first (default south)")
 
     tournament = commands.add_parser(
         "tournament",
@@ -30,6 +39,12 @@ def main() -> None:
         from awale.ui.app import run  # imported here so the other commands never load Pygame
 
         run()
+    elif args.command == "watch":
+        from awale.ui.app import run
+        from awale.ui.watch import WatchScreen
+
+        players = {Side.SOUTH: AGENTS[args.south](), Side.NORTH: AGENTS[args.north]()}
+        run(lambda: WatchScreen(players, Side[args.first.upper()]))
     elif args.command == "tournament":
         run_tournament_command(args)
 

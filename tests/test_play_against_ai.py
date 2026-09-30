@@ -168,14 +168,6 @@ def test_the_menu_starts_a_game_with_the_chosen_players():
     assert screen.game.position.to_move is Side.NORTH
 
 
-def test_the_menu_does_not_start_ai_against_ai():
-    menu = MenuScreen({Side.SOUTH: "Random", Side.NORTH: "Random"})
-
-    assert press(menu, pygame.K_RETURN) is menu
-    click(menu, menu.start_button.rect.center)
-    assert menu.can_start is False
-
-
 def test_back_to_the_menu_keeps_the_choices():
     screen = PlayScreen({Side.SOUTH: None, Side.NORTH: RandomAgent()}, first=Side.NORTH)
 

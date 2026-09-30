@@ -1,16 +1,22 @@
 """The window's main loop. It shows one screen at a time: the start menu or a game."""
 
+from collections.abc import Callable
+
 import pygame
 
 from awale.ui.board_view import HEIGHT, WIDTH
 from awale.ui.menu import MenuScreen
 
 
-def run() -> None:
+def run(first_screen: Callable | None = None) -> None:
+    """Open the window. `first_screen` makes the screen to show first; by default it is the start menu.
+
+    It is a function, not a screen, because a screen needs Pygame to be started before it is made.
+    """
     pygame.init()
     pygame.display.set_caption("Awalé")
     surface = pygame.display.set_mode((WIDTH, HEIGHT))
-    screen = MenuScreen()
+    screen = first_screen() if first_screen else MenuScreen()
     clock = pygame.time.Clock()
     hand_cursor = False
     while True:

@@ -73,3 +73,17 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - Random against Random over 10000 games: A's points 50.5% ± 1.0%, as it should be for two equal agents.
 - `awale/records.py` writes moves as a-f for South and A-F for North, saves one JSON file per game, and keeps only the newest 100 games and 10 tournaments. `GameRecord.replay()` plays a record back into a `Game`.
 - Tests never write into the real `records/` folder: `tests/conftest.py` points it to a temporary folder.
+
+## Step 5: Watch with the thoughts panel (2026-09-30)
+
+**What:** `awale watch A B` opens a window where two AI agents play each other. You can pause, step one move at a time, and set the speed with a slider. A thoughts panel shows what the agent to move is thinking: a score over each pit it may play, the line of play it expects, and the work it did (positions, depth, time). Each part has a checkbox. The start menu now opens Watch when both sides are AI agents.
+
+**Why:** From step 6 on we write agents that look ahead. Watching their thoughts on a real position is the quickest way to see why an agent plays a move, and to spot a bug in its scores before a tournament hides it in an average.
+
+**How:**
+- `Thoughts` (in `awale/agents/base.py`) holds the move and, if the agent has them, the move scores, the expected line, the positions it looked at and the depth. An agent writes either `choose_move` (just the move, like Random) or `think` (the move with its thoughts). Each method is built from the other, and making an agent class with neither is an error at once, instead of an endless loop later.
+- Play and Watch now share `GameScreen` (`awale/ui/game_screen.py`): the game, the agents, the background thread, the messages and the game record. `PlayScreen` adds clicks and Undo, `WatchScreen` adds pause, step and speed.
+- In Watch, an agent's thoughts are shown on the position it thought about, before its move is played. The wait is counted from when it finished thinking, so a slow agent's thoughts stay on screen as long as a fast agent's.
+- The speed slider goes from 3 s to 0.1 s per move on a log scale, like a volume knob. Faster than 0.1 s is not possible: the window draws 30 frames a second, and a move takes two frames.
+- `awale/ui/thoughts_view.py` draws the panel, and `awale/ui/widgets.py` has the new checkbox and slider. The window is taller (680 px) to make room; Play will use that room for its own thoughts panel later.
+- The window tests use a small fake agent that scores each pit by its number, since no real agent gives scores yet.
