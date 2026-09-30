@@ -47,3 +47,15 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - `awale/ui/menu.py` is the start menu. It does not start a game with no person, because AI against AI is Watch (step 5).
 - `Game.positions` is new: every position so far, which Undo needs.
 - The window tests use small fake agents (one always plays its leftmost pit, one waits until the test lets it answer), so they do not depend on Random.
+
+## Step 3, part 2: the Random agent (2026-09-30)
+
+**What:** `RandomAgent.choose_move` picks any legal move, each with the same chance. Its tests now run, and `docs/agents/random.md` explains how it works. This finishes step 3.
+
+**Why:** We changed how we work: Claude now writes every agent and explains it in detail, instead of Taras writing Random, Greedy and Minimax. Random is the baseline that every later agent must beat.
+
+**How:**
+- One line: `self.rng.choice(position.legal_moves())`. The rules live in `legal_moves`, so the agent never needs to know them.
+- The agent has its own random generator, so the same seed always gives the same game.
+- A quick run of 2000 games of Random against Random: North won 977, South 891, 132 draws. The tournament in step 4 will measure this properly.
+- From now on, every agent gets its own explanation in `docs/agents/`.

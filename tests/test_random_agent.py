@@ -1,14 +1,9 @@
-"""The Random agent. Taras writes RandomAgent.choose_move, these tests check it."""
+"""The Random agent."""
 
 from collections import Counter
 
-import pytest
-
 from awale.agents import RandomAgent
 from awale.engine import Game, Position
-
-# Delete this line when you start writing RandomAgent.choose_move. The tests will fail until it is done.
-pytestmark = pytest.mark.skip(reason="RandomAgent.choose_move is not written yet")
 
 
 def play_whole_game(south, north) -> list[int]:

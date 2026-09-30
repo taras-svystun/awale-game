@@ -17,5 +17,5 @@ class RandomAgent(Agent):
         self.rng = random.Random(seed)
 
     def choose_move(self, position: Position) -> int:
-        # Taras writes this. The tests are in tests/test_random_agent.py.
-        raise NotImplementedError("RandomAgent.choose_move is not written yet")
+        # No thinking at all: every legal move has the same chance.
+        return self.rng.choice(position.legal_moves())

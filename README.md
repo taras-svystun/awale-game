@@ -50,8 +50,6 @@ Only the Random agent's tests:
 .venv/bin/pytest tests/test_random_agent.py
 ```
 
-They are skipped until `RandomAgent.choose_move` in `awale/agents/random_agent.py` is written. To turn them on, delete the `pytestmark = ...` line at the top of the test file.
-
 ## Try the engine in Python
 
 You can also play without a window, in a Python shell:
