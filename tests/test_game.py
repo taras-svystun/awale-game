@@ -74,3 +74,15 @@ def test_undo_after_the_game_ended_early_makes_it_playable_again():
 def test_undo_at_the_start_raises_an_error():
     with pytest.raises(ValueError):
         Game().undo()
+
+
+def test_a_copy_of_a_game_does_not_change_with_it():
+    game = Game()
+    game.play(3)
+    copy = game.copy()
+    game.play(2)
+    copy.undo()
+
+    assert game.moves == [3, 2]
+    assert copy.moves == []
+    assert copy.position == Position.start()

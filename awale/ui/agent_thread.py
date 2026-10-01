@@ -4,14 +4,16 @@ import threading
 import time
 
 from awale.agents import Agent, Thoughts
-from awale.engine import Position
+from awale.engine import Game
 
 
 class AgentThread:
     """One agent choosing one move. Python cannot stop a thread, so to cancel, just forget this object."""
 
-    def __init__(self, agent: Agent, position: Position):
-        self.position = position
+    def __init__(self, agent: Agent, game: Game):
+        # A copy, because the window may undo or play moves in its game while the agent thinks.
+        self._game = game.copy()
+        self.position = game.position
         self.started = time.monotonic()
         self.thoughts: Thoughts | None = None
         self.seconds = 0.0  # how long the agent thought
@@ -24,7 +26,7 @@ class AgentThread:
     def _run(self) -> None:
         started = time.perf_counter()
         try:
-            self.thoughts = self._agent.think(self.position)
+            self.thoughts = self._agent.think_in_game(self._game)
         except Exception as error:
             # Keep it for the main thread to raise, so a broken agent stops the program
             # instead of leaving the window waiting for a move forever.

@@ -4,7 +4,7 @@ import random
 from abc import ABC
 from dataclasses import dataclass, field
 
-from awale.engine import Position
+from awale.engine import Game, Position
 
 
 @dataclass(frozen=True)
@@ -63,3 +63,12 @@ class Agent(ABC):
     def think(self, position: Position) -> Thoughts:
         """Choose a move, like `choose_move`, and also say how it was chosen."""
         return Thoughts(self.choose_move(position))
+
+    def think_in_game(self, game: Game) -> Thoughts:
+        """Think about the position on the board in `game`. Tournament, Play and Watch call this one.
+
+        Most agents only need the position, so this just calls `think`. An agent that also needs
+        the moves before it writes its own: OpenSpiel's agents do, because OpenSpiel can only start
+        from the start position and play all the moves again.
+        """
+        return self.think(game.position)

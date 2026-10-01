@@ -6,7 +6,7 @@ import sys
 import pytest
 
 from awale.agents import HEURISTICS, Agent, GreedyAgent, MinimaxAgent, RandomAgent, Thoughts, make_agent
-from awale.engine import Position
+from awale.engine import Game, Position
 
 
 def test_agents_never_import_pygame():
@@ -31,6 +31,17 @@ def test_an_agent_that_only_thinks_can_also_just_choose_a_move():
             return Thoughts(move=4, scores={4: 1.0, 5: 0.0})
 
     assert ThinkingAgent().choose_move(Position.start()) == 4
+
+
+def test_in_a_game_an_agent_thinks_about_the_position_on_the_board():
+    class LastPitAgent(Agent):
+        def think(self, position):
+            return Thoughts(move=position.legal_moves()[-1])
+
+    game = Game()
+    game.play(6)
+
+    assert LastPitAgent().think_in_game(game) == LastPitAgent().think(game.position)
 
 
 def test_an_agent_must_write_choose_move_or_think():

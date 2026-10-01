@@ -165,6 +165,12 @@ class Game:
         self._ended.append(ended)
         self.moves.append(pit)
 
+    def copy(self) -> "Game":
+        """The same game as a new object: moves and undos in one do not change the other."""
+        game = Game(start=self._positions[0])
+        game._positions, game._ended, game.moves = list(self._positions), list(self._ended), list(self.moves)
+        return game
+
     def undo(self) -> None:
         """Take back the last move."""
         if not self.moves:

@@ -49,7 +49,7 @@ class GameScreen:
         if self.game.is_over or self.agent_to_move is None:
             return
         if self.thinking is None:
-            self.thinking = AgentThread(self.agent_to_move, self.game.position)
+            self.thinking = AgentThread(self.agent_to_move, self.game)
             return
         if not self.thinking.is_done:
             return

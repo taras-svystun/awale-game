@@ -44,7 +44,7 @@ class GameJob:
 class GameOutcome:
     job: GameJob
     record: GameRecord  # the whole game, opening included
-    thinking: tuple[float, float]  # seconds spent in choose_move, (South, North)
+    thinking: tuple[float, float]  # seconds spent choosing moves, (South, North)
     agent_moves: tuple[int, int]  # moves chosen by each agent, not counting the opening, (South, North)
 
 
@@ -59,7 +59,7 @@ def play_game(job: GameJob) -> GameOutcome:
     while not game.is_over:
         side = game.position.to_move
         started = time.perf_counter()
-        pit = agents[side].choose_move(game.position)
+        pit = agents[side].think_in_game(game).move
         thinking[side] += time.perf_counter() - started
         agent_moves[side] += 1
         game.play(pit)
