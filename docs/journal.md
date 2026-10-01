@@ -156,3 +156,18 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - At a fixed depth it chooses exactly AlphaBeta's moves: the tests check this on many positions, whole games and a tournament. Tournaments with the same seed give the same results, 1.6 times faster at depth 6 and 2.6 times at depth 8. At depth 10 with `mix` it is almost 5 times faster.
 - With 0.1 s per move, `Deepening:mix` gets 79.0% ± 5.4% of the points against `AlphaBeta:mix` and 64.2% ± 6.5% against `AlphaBeta:8:mix`, which thinks about as long. With 0.4 s it gets 83% against itself at 0.1 s. Time-limited tournaments are not exactly repeatable, since the depth reached depends on how busy the computer is.
 - `Thoughts` has a new `upper_bounds` field. The menu buttons are narrower to fit seven. `CONTEXT.md` now defines depth and time limit.
+
+## Step 11: the MCTS agent (2026-10-01)
+
+**What:** `MCTSAgent` is Monte Carlo tree search. It judges a move by playing random games to the end (playouts) and counting who won, and it grows a tree so that good moves, and good answers to them, get most of the playouts. It thinks for 0.1 s per move by default; `MCTS:1s` sets the time, `MCTS:1000` the number of playouts. It is in the start menu, Watch and Tournament. `docs/agents/mcts.md` explains it.
+
+**Why:** Every agent so far looks a fixed number of moves ahead and then guesses with a heuristic we wrote. MCTS is the other big family of game search: no heuristic and no fixed depth, only random games. It is also what step 12 compares with OpenSpiel's MCTS.
+
+**How:**
+- Each playout has four steps: selection with the UCB formula (share of wins plus a bonus for moves tried less, C = √2), expansion of one untried move, a random playout, and backpropagation. Each node counts wins for the player who moved into it. It plays the move tried most.
+- Every legal move is tried at least once, so every move gets a score. A playout stops after 200 moves, since a few random games go round in circles. It asks for the legal moves once per move, which makes playouts a quarter faster: about 1 500 per second from the start.
+- `make_agent` now has `OPTIONS`: what each agent can set after a colon. For MCTS a whole number is the playouts, not a depth. Errors say what the agent can set.
+- `Thoughts` has a new `playouts` field. Watch shows MCTS scores as shares of wins with two decimals (`0.58`, `1.00`), and the playouts in "Work done". The menu has eight buttons now, so they are narrower, with a smaller font.
+- `CONTEXT.md` defines a playout.
+- Tournaments (`--workers 4`, 50–100 games each, so the intervals are wide): with 0.1 s per move it beats Greedy 97.0%, but loses to plain `AlphaBeta:4` (23.5%) and wins nothing against `Deepening:mix`. With 1 s it beats itself at 0.1 s 96.0% and `AlphaBeta:4` 85.0%, but still gets only 6.0% against `Deepening:mix`. It needs many playouts, and Python plays only about 1 500 per second; random playouts also judge Awalé much worse than `mix`.
+- Other values of C (0.5, 1.0, 2.0) did not beat √2 clearly, so it stays.

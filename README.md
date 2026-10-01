@@ -22,7 +22,7 @@ Run the second line again after pulling new code, in case new packages were adde
 .venv/bin/awale play
 ```
 
-A start menu opens first. For South and for North, pick Person or an AI agent (Random, Greedy, Minimax, AlphaBeta, AlphaBeta:mix or Deepening:mix, see [AI agents](#ai-agents)), pick who moves first, and press Start or Enter.
+A start menu opens first. For South and for North, pick Person or an AI agent (Random, Greedy, Minimax, AlphaBeta, AlphaBeta:mix, Deepening:mix or MCTS, see [AI agents](#ai-agents)), pick who moves first, and press Start or Enter.
 Two people can share the computer, or you can play against an AI. If you pick an AI agent on both sides, Start opens [Watch](#watch) instead. To play on a real wooden board against the AI, set your friend as the Person, type in their moves, and copy the AI's moves onto the board: the line under the title says which pit the AI played.
 
 South sits at the bottom and North at the top. Click a pit in your row, or press 1-6 to play your pit counted from your own left (North's pit 1 is at the top right).
@@ -56,7 +56,7 @@ Each agent first thinks about the position on the board and shows its thoughts, 
 - The thoughts panel has a checkbox for each part:
   - Move scores: a score over each pit the agent may play, higher is better for it. Its choice is in yellow.
   - Expected line: the moves it expects next, in move letters (a-f South, A-F North).
-  - Work done: how many positions it looked at, how many moves ahead, and how long it took.
+  - Work done: how many positions it looked at, how many moves ahead, and how long it took. MCTS also shows how many random games it played.
 
 Random does not look ahead, so it has no scores and no line, and its work is 0 positions. Greedy shows the seeds each move would capture:
 
@@ -106,6 +106,18 @@ Give it more time with a number of seconds and an "s". With 1 second per move it
 .venv/bin/awale watch Deepening:1s:mix Deepening:mix
 ```
 
+MCTS judges each move by playing many random games to the end from it. Its scores are the share of those games it won after each move, from 0.00 to 1.00, and "Work done" shows how many random games it played in its 0.1 seconds:
+
+```sh
+.venv/bin/awale watch MCTS Deepening:mix
+```
+
+Give it more time with a number of seconds and an "s", or a fixed number of random games per move:
+
+```sh
+.venv/bin/awale watch MCTS:1s MCTS:1000
+```
+
 Keys: N starts a new game with the same agents, M goes back to the menu, Esc quits.
 Every finished Watch game is saved as a game record too.
 
@@ -121,8 +133,12 @@ Each agent is explained in its own file in [docs/agents](docs/agents):
   - `Deepening:0.5s` thinks for half a second per move;
   - `Deepening:8` always looks 8 moves ahead, with no time limit. It then chooses exactly the moves `AlphaBeta:8` chooses, only faster;
   - `Deepening:12:1s` stops at 12 moves ahead or after 1 second.
+- **MCTS** ([mcts.md](docs/agents/mcts.md)): Monte Carlo tree search. It needs no heuristic: it judges moves by playing many random games (playouts) to the end, and plays more of them after the moves that look good. By default it thinks for 0.1 seconds per move. Give it a time, a number of playouts, or both:
+  - `MCTS:1s` thinks for 1 second per move;
+  - `MCTS:1000` plays 1000 playouts per move, with no time limit. The same seed then always gives the same moves;
+  - `MCTS:1000:1s` stops after 1000 playouts or after 1 second.
 
-In the start menu, Minimax always looks 4 moves ahead and AlphaBeta 6, AlphaBeta:mix is AlphaBeta with the `mix` heuristic, and Deepening:mix is Deepening with `mix` and 0.1 seconds per move. On the command line (`watch` and `tournament`) you can set their depth, heuristic and time.
+In the start menu, Minimax always looks 4 moves ahead and AlphaBeta 6, AlphaBeta:mix is AlphaBeta with the `mix` heuristic, Deepening:mix is Deepening with `mix` and 0.1 seconds per move, and MCTS thinks for 0.1 seconds per move. On the command line (`watch` and `tournament`) you can set their depth, heuristic, playouts and time.
 
 ### Heuristics
 
@@ -218,6 +234,19 @@ Deepening with 0.1 seconds per move against AlphaBeta at depth 8, which thinks a
 .venv/bin/awale tournament Deepening:mix AlphaBeta:8:mix --openings 100 --seed 1 --workers 4
 ```
 
+MCTS against Greedy, and against Deepening with `mix`, both with 0.1 seconds per move (100 games each, about 1 minute each):
+
+```sh
+.venv/bin/awale tournament MCTS Greedy --openings 50 --seed 1 --workers 4
+.venv/bin/awale tournament MCTS Deepening:mix --openings 50 --seed 1 --workers 4
+```
+
+MCTS with 1 second per move against MCTS with 0.1 seconds (50 games, about 10 minutes):
+
+```sh
+.venv/bin/awale tournament MCTS:1s MCTS --openings 25 --seed 1 --workers 4
+```
+
 Save every game in a CSV file in `records/tournaments` (the last 10 tournaments are kept):
 
 ```sh
@@ -278,7 +307,7 @@ Only the quick rule tests, without OpenSpiel:
 Only the agents' tests:
 
 ```sh
-.venv/bin/pytest tests/test_agents.py tests/test_random_agent.py tests/test_greedy_agent.py tests/test_minimax_agent.py tests/test_alphabeta_agent.py tests/test_heuristics.py tests/test_deepening_agent.py
+.venv/bin/pytest tests/test_agents.py tests/test_random_agent.py tests/test_greedy_agent.py tests/test_minimax_agent.py tests/test_alphabeta_agent.py tests/test_heuristics.py tests/test_deepening_agent.py tests/test_mcts_agent.py
 ```
 
 Only the Watch window tests:

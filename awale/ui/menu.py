@@ -12,10 +12,10 @@ from awale.ui.widgets import Button, blit_centered
 
 ROW_Y = {Side.SOUTH: 190, Side.NORTH: 260, "first": 330}
 LABEL_RIGHT, OPTIONS_X = 160, 170
-OPTION_WIDTH, OPTION_GAP, OPTION_HEIGHT = 114, 4, 46
-# The agents, with the best heuristic we have for the last two (see make_agent for these names).
+OPTION_WIDTH, OPTION_GAP, OPTION_HEIGHT = 99, 4, 46
+# The agents, with the best heuristic we have for AlphaBeta:mix and Deepening:mix (see make_agent for these names).
 # Plain Deepening is left out to keep the row short: with store_diff it is only a quicker AlphaBeta.
-MENU_AGENTS = ["Random", "Greedy", "Minimax", "AlphaBeta", "AlphaBeta:mix", "Deepening:mix"]
+MENU_AGENTS = ["Random", "Greedy", "Minimax", "AlphaBeta", "AlphaBeta:mix", "Deepening:mix", "MCTS"]
 
 
 def option_rect(row, i: int) -> pygame.Rect:
@@ -30,7 +30,7 @@ class MenuScreen:
         self.hover: tuple[int, int] | None = None
         self.font_title = pygame.font.Font(None, 72)
         self.font = pygame.font.Font(None, 30)
-        self.font_small = pygame.font.Font(None, 20)  # so the longest agent name fits on its button
+        self.font_small = pygame.font.Font(None, 18)  # so the longest agent name fits on its button
         self.player_buttons = {
             (side, name): Button(option_rect(side, i), name)
             for side in Side

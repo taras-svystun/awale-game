@@ -9,13 +9,13 @@ import threading
 import pygame
 import pytest
 
-from awale.agents import Agent, DeepeningAgent, RandomAgent, Thoughts
+from awale.agents import Agent, DeepeningAgent, MCTSAgent, RandomAgent, Thoughts
 from awale.engine import Game, Position, Side
 from awale.records import load_game
 from awale.ui.board_view import HEIGHT, WIDTH
 from awale.ui.menu import PERSON, MenuScreen
 from awale.ui.play import PlayScreen
-from awale.ui.thoughts_view import line_text, score_text
+from awale.ui.thoughts_view import line_text, score_text, work_text
 from awale.ui.watch import FASTEST, SLOWEST, WatchScreen, delay_at, value_for
 
 
@@ -175,6 +175,19 @@ def test_scores_are_short():
     assert score_text(0.5234) == "0.52"
 
 
+def test_a_share_of_wins_always_has_two_decimals():
+    # MCTS scores are the share of its random games won after each move, from 0 to 1.
+    assert score_text(1.0, share=True) == "1.00"
+    assert score_text(0, share=True) == "0.00"
+    assert score_text(0.5234, share=True) == "0.52"
+
+
+def test_work_done_shows_the_playouts_of_mcts():
+    assert work_text(Thoughts(1, positions=1234, depth=3), 0.05) == "1,234 positions, depth 3, 50.0 ms"
+    mcts = Thoughts(1, positions=51234, depth=7, playouts=500)
+    assert work_text(mcts, 0.1) == "500 playouts, 51,234 positions, depth 7, 100.0 ms"
+
+
 def test_an_upper_bound_is_shown_with_a_sign():
     assert score_text(-7, upper_bound=True) == "≤-7"
     assert score_text(0, upper_bound=True) == "≤0"
@@ -240,6 +253,10 @@ def test_drawing_every_moment_of_a_watch_game():
     let_agent_think(deepening_screen)
     assert deepening_screen.thinking.thoughts.upper_bounds
     deepening_screen.draw(surface)  # scores that are only upper bounds
+
+    mcts_screen = watch(MCTSAgent(seed=0, playouts=50), RandomAgent(seed=2))
+    let_agent_think(mcts_screen)
+    mcts_screen.draw(surface)  # scores that are shares of wins, and playouts in the work done
 
     random_screen = watch(RandomAgent(seed=1), RandomAgent(seed=2))
     let_agent_think(random_screen)

@@ -170,4 +170,4 @@ def test_the_tournament_command_refuses_an_unknown_agent_before_playing():
     result = subprocess.run([awale, "tournament", "Greedy:3", "Random"], capture_output=True, text=True)
 
     assert result.returncode != 0
-    assert "Greedy has no depth or heuristic to set" in result.stderr
+    assert "Greedy has nothing to set" in result.stderr

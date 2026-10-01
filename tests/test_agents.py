@@ -65,8 +65,25 @@ def test_make_agent_sets_the_heuristic_of_a_search_agent():
 
 @pytest.mark.parametrize(
     "name",
-    ["Nobody", "Greedy:3", "Greedy:store", "Minimax:0", "Minimax:deep", "Minimax:", "Minimax:3:4", "Minimax:store:store"],
+    [
+        "Nobody",
+        "Greedy:3",
+        "Greedy:store",
+        "Minimax:0",
+        "Minimax:deep",
+        "Minimax:",
+        "Minimax:3:4",
+        "Minimax:store:store",
+        "Minimax:1s",
+    ],
 )
 def test_make_agent_refuses_a_name_it_does_not_know(name):
     with pytest.raises(ValueError):
         make_agent(name)
+
+
+def test_make_agent_says_what_an_agent_can_set():
+    with pytest.raises(ValueError, match="Greedy has nothing to set"):
+        make_agent("Greedy:3")
+    with pytest.raises(ValueError, match="is not a number of playouts .* nor a time limit"):
+        make_agent("MCTS:mix")

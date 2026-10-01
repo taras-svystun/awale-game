@@ -87,6 +87,10 @@ _Avoid_: Evaluation, strategy, score function
 A method that looks ahead through possible moves to pick one, such as minimax, alpha-beta or MCTS. Search usually uses a heuristic to judge the positions it reaches.
 _Avoid_: Strategy, algorithm
 
+**Playout**:
+A game played from a position to the end with random moves. MCTS judges a position by the share of its playouts each player wins.
+_Avoid_: Rollout, simulation, random game
+
 **Depth**:
 How many moves ahead a search looks, counting the moves of both players. Depth 4 is my move, the answer, my next move, and the next answer.
 _Avoid_: Ply, level, horizon

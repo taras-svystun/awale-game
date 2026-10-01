@@ -9,7 +9,7 @@ import threading
 import pygame
 import pytest
 
-from awale.agents import AGENTS, HEURISTICS, Agent, AlphaBetaAgent, DeepeningAgent, RandomAgent
+from awale.agents import AGENTS, HEURISTICS, Agent, AlphaBetaAgent, DeepeningAgent, MCTSAgent, RandomAgent
 from awale.engine import Side
 from awale.ui.board_view import HEIGHT, WIDTH, pit_center
 from awale.ui.menu import PERSON, MenuScreen
@@ -193,6 +193,12 @@ def test_the_menu_offers_every_ai_agent_and_every_button_fits_in_the_window():
     screen = press(menu, pygame.K_RETURN)
     assert isinstance(screen.players[Side.NORTH], DeepeningAgent)
     assert screen.players[Side.NORTH].heuristic is HEURISTICS["mix"]
+    assert screen.players[Side.NORTH].time_limit == 0.1
+
+    menu = MenuScreen()
+    click(menu, menu.player_buttons[(Side.NORTH, "MCTS")].rect.center)
+    screen = press(menu, pygame.K_RETURN)
+    assert isinstance(screen.players[Side.NORTH], MCTSAgent)
     assert screen.players[Side.NORTH].time_limit == 0.1
 
 

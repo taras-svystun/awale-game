@@ -4,7 +4,7 @@ It has a checkbox for each part:
 - move scores, drawn over the pits of the player to move, the chosen move in yellow,
   and "≤" before a score that is only an upper bound;
 - the expected line of play, in move letters (a-f South, A-F North);
-- the work done: positions looked at, how deep, and how long it took.
+- the work done: random games played to the end (MCTS), positions looked at, how deep, and how long it took.
 """
 
 import time
@@ -26,12 +26,15 @@ SCORE_WIDTH, SCORE_HEIGHT = 60, 24
 LEFT = 60
 
 
-def score_text(score: float, upper_bound: bool = False) -> str:
-    """+3, -2 and 0 for whole numbers (like seeds), 0.52 for the rest (like a share of wins).
+def score_text(score: float, upper_bound: bool = False, share: bool = False) -> str:
+    """+3, -2 and 0 for whole numbers (like seeds), 1.25 for the rest.
 
+    A `share` of wins (from MCTS) always has 2 decimals, from 0.00 to 1.00.
     An upper bound gets a "≤" in front: the move is worth this or less.
     """
-    if float(score).is_integer():
+    if share:
+        text = f"{score:.2f}"
+    elif float(score).is_integer():
         text = f"{score:+.0f}" if score else "0"
     else:
         text = f"{score:.2f}"
@@ -49,7 +52,8 @@ def line_text(first_mover: Side, line: tuple[int, ...]) -> str:
 
 
 def work_text(thoughts: Thoughts, seconds: float) -> str:
-    return f"{thoughts.positions:,} positions, depth {thoughts.depth}, {duration(seconds)}"
+    playouts = f"{thoughts.playouts:,} playouts, " if thoughts.playouts else ""
+    return f"{playouts}{thoughts.positions:,} positions, depth {thoughts.depth}, {duration(seconds)}"
 
 
 class ThoughtsPanel:
@@ -106,7 +110,8 @@ class ThoughtsPanel:
             badge.center = (pit_center(mover, pit)[0], SCORE_Y[mover])
             pygame.draw.rect(surface, HOVER if chosen else PIT, badge, border_radius=SCORE_HEIGHT // 2)
             color = BUTTON_TEXT_SELECTED if chosen else TEXT
-            text = score_text(score, pit in thoughts.upper_bounds)
+            # Only MCTS plays random games to the end, and its scores are the share of those games it won.
+            text = score_text(score, pit in thoughts.upper_bounds, share=thoughts.playouts > 0)
             blit_centered(surface, self.font, text, color, badge.center)
 
     def _text(self, surface: pygame.Surface, text: str, y: int) -> None:

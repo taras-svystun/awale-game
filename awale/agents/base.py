@@ -24,6 +24,8 @@ class Thoughts:
     # Moves whose score is only an upper bound: the move is worth this score or less.
     # Alpha-beta can prove that a move is worse than the best one without finding its exact score.
     upper_bounds: frozenset[int] = frozenset()
+    # How many random games it played to the end, for an agent that judges moves that way (MCTS).
+    playouts: int = 0
 
 
 class Agent(ABC):
@@ -39,7 +41,7 @@ class Agent(ABC):
     name = "Agent"
 
     def __init__(self, seed: int | None = None):
-        # Every agent has its own random generator, for agents that use chance (Random, Greedy's ties, MCTS later).
+        # Every agent has its own random generator, for agents that use chance (Random, Greedy's ties, MCTS).
         # Not the shared `random` module: the same seed then always gives the same moves,
         # so a game or a whole tournament can be repeated exactly.
         self.rng = random.Random(seed)
