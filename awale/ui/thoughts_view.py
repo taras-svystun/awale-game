@@ -110,7 +110,7 @@ class ThoughtsPanel:
             badge.center = (pit_center(mover, pit)[0], SCORE_Y[mover])
             pygame.draw.rect(surface, HOVER if chosen else PIT, badge, border_radius=SCORE_HEIGHT // 2)
             color = BUTTON_TEXT_SELECTED if chosen else TEXT
-            # Only MCTS plays random games to the end, and its scores are the share of those games it won.
+            # Only MCTS (ours and OpenSpiel's) plays random games to the end, and its scores are the share of those games it won.
             text = score_text(score, pit in thoughts.upper_bounds, share=thoughts.playouts > 0)
             blit_centered(surface, self.font, text, color, badge.center)
 

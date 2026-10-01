@@ -15,6 +15,7 @@ LABEL_RIGHT, OPTIONS_X = 160, 170
 OPTION_WIDTH, OPTION_GAP, OPTION_HEIGHT = 99, 4, 46
 # The agents, with the best heuristic we have for AlphaBeta:mix and Deepening:mix (see make_agent for these names).
 # Plain Deepening is left out to keep the row short: with store_diff it is only a quicker AlphaBeta.
+# OpenSpiel's agents are left out too: they are outside opponents, for Watch and Tournament on the command line.
 MENU_AGENTS = ["Random", "Greedy", "Minimax", "AlphaBeta", "AlphaBeta:mix", "Deepening:mix", "MCTS"]
 
 

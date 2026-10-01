@@ -324,7 +324,7 @@ MCTSAgent(seed=0, playouts=1000, exploration=1.0).think(Position.start())
 
 Two things hold our MCTS back:
 
-1. **Python is slow at playouts.** We play about 1 500 random games per second from the start position. MCTS programs written in C++ play hundreds of thousands. OpenSpiel's MCTS (step 12) will show how much the speed alone is worth.
+1. **Python is slow at playouts.** We play about 1 500 random games per second from the start position. MCTS programs written in C++ play hundreds of thousands. OpenSpiel's MCTS, in C++, plays about 7 times more and beats ours 97.5% with the same time, but still loses to `Deepening:mix` (see [openspiel.md](openspiel.md)).
 2. **Random playouts are a poor judge of Awalé.** A random player misses most captures and gives seeds away all the time. A position that a good player wins in 10 moves is often lost in a random game. A heuristic like `mix` knows that mobility and seeds matter; a random game has to find it out, one playout at a time.
 
 Ideas that are known to help, if we want to come back to MCTS:

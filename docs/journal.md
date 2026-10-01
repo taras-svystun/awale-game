@@ -171,3 +171,17 @@ A short, plain-English history of each finished step: what we did, why, and how.
 - `CONTEXT.md` defines a playout.
 - Tournaments (`--workers 4`, 50–100 games each, so the intervals are wide): with 0.1 s per move it beats Greedy 97.0%, but loses to plain `AlphaBeta:4` (23.5%) and wins nothing against `Deepening:mix`. With 1 s it beats itself at 0.1 s 96.0% and `AlphaBeta:4` 85.0%, but still gets only 6.0% against `Deepening:mix`. It needs many playouts, and Python plays only about 1 500 per second; random playouts also judge Awalé much worse than `mix`.
 - Other values of C (0.5, 1.0, 2.0) did not beat √2 clearly, so it stays.
+
+## Step 12: OpenSpiel's agents (2026-10-01)
+
+**What:** Two outside opponents: `OpenSpielMCTS`, OpenSpiel's MCTS in C++, and `OpenSpielAlphaBeta`, OpenSpiel's alpha-beta in Python with our heuristics. They take the same options as MCTS and AlphaBeta (`OpenSpielMCTS:1s`, `OpenSpielAlphaBeta:4:mix`). They work in Watch and Tournament, but are not in the start menu. `docs/agents/openspiel.md` explains them.
+
+**Why:** All our agents were tested only against each other, so a bug in all of them would never show. Agents written by other people check our code, and OpenSpiel's fast MCTS shows how much speed is worth.
+
+**How:**
+- From Python, OpenSpiel's state can only start at the start position. So the agents play every move of the game again in OpenSpiel. Agents now have `think_in_game(game)`, which Tournament, Play and Watch call; by default it calls `think(game.position)`. The window gives agents a copy of the game (`Game.copy`). `docs/adr/0002` explains the choice. OpenSpiel is now a normal dependency.
+- OpenSpiel's alpha-beta returns only its best move, so we ask it about the position after each move to get a score for every move. Our heuristic is divided by `WIN`, since it wants values from −1 to 1. The tests check it gives every move exactly our AlphaBeta's score.
+- OpenSpiel's MCTS uses OpenSpiel's usual settings: C = 2 and the MCTS-Solver. Its scores are turned into our shares of wins from 0 to 1.
+- Tournaments: OpenSpiel's alpha-beta is even with ours at depth 4 (49.2%), but gets only 39.0% at depth 6 with `mix`. The scores agreed; the difference is that it always takes the leftmost of equal moves. Our AlphaBeta with that habit also gets 39.5%, so random choice between equal moves is worth about 10% of the points.
+- OpenSpiel's MCTS plays about 7 times more playouts per second. With the same playouts it gets 63.5% against ours (likely the solver), with the same time 97.5%, and it beats `AlphaBeta:4` 97%. But it gets only 7.5% against `Deepening:mix`, and 35% with 11 times more time. Speed alone does not beat a good heuristic.
+- While OpenSpiel's MCTS thinks, the window does not redraw: its C++ code holds Python's lock.

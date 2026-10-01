@@ -9,9 +9,10 @@ from awale.agents.greedy_agent import GreedyAgent
 from awale.agents.heuristics import HEURISTICS
 from awale.agents.mcts_agent import MCTSAgent
 from awale.agents.minimax_agent import MinimaxAgent
+from awale.agents.openspiel_agents import OpenSpielAlphaBetaAgent, OpenSpielMCTSAgent
 from awale.agents.random_agent import RandomAgent
 
-# Every AI agent you can pick in the start menu, by the name shown there.
+# Every AI agent, by its name in the start menu, Watch and Tournament.
 AGENTS: dict[str, type[Agent]] = {
     "Random": RandomAgent,
     "Greedy": GreedyAgent,
@@ -19,6 +20,9 @@ AGENTS: dict[str, type[Agent]] = {
     "AlphaBeta": AlphaBetaAgent,
     "Deepening": DeepeningAgent,
     "MCTS": MCTSAgent,
+    # Written by OpenSpiel, not by us: outside opponents to test our agents against.
+    "OpenSpielMCTS": OpenSpielMCTSAgent,
+    "OpenSpielAlphaBeta": OpenSpielAlphaBetaAgent,
 }
 # What each agent can set after colons in its name, in any order: "AlphaBeta:8:mix", "Deepening:0.5s:mix", "MCTS:1000".
 # A whole number is the depth, or the number of playouts for MCTS; a name is a heuristic;
@@ -28,6 +32,8 @@ OPTIONS: dict[str, tuple[str, ...]] = {
     "AlphaBeta": ("depth", "heuristic"),
     "Deepening": ("depth", "heuristic", "time_limit"),
     "MCTS": ("playouts", "time_limit"),
+    "OpenSpielMCTS": ("playouts", "time_limit"),
+    "OpenSpielAlphaBeta": ("depth", "heuristic"),
 }
 OPTION_TEXT = {
     "depth": "a depth (a whole number from 1 up)",
@@ -90,6 +96,8 @@ __all__ = [
     "GreedyAgent",
     "MCTSAgent",
     "MinimaxAgent",
+    "OpenSpielAlphaBetaAgent",
+    "OpenSpielMCTSAgent",
     "RandomAgent",
     "Thoughts",
     "make_agent",

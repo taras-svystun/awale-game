@@ -3,11 +3,12 @@ name = "awale"
 version = "0.1.0"
 description = "Awalé on your computer: play people or AI, and build AI agents."
 requires-python = ">=3.11"
-dependencies = ["pygame>=2.5"]
+# OpenSpiel is our reference for the rules (in the tests), and its agents are outside opponents.
+dependencies = ["pygame>=2.5", "open_spiel"]
 
 [project.optional-dependencies]
-# Only needed to run the tests. OpenSpiel is our reference for the rules.
-dev = ["pytest", "open_spiel"]
+# Only needed to run the tests.
+dev = ["pytest"]
 
 [project.scripts]
 awale = "awale.cli:main"

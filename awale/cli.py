@@ -19,10 +19,10 @@ def agent_name(name: str) -> str:
 
 AGENT_NAMES = (
     f"one of {', '.join(AGENTS)}; "
-    f"Minimax, AlphaBeta and Deepening can also take a depth and a heuristic ({', '.join(HEURISTICS)}), "
+    f"Minimax, AlphaBeta, Deepening and OpenSpielAlphaBeta can also take a depth and a heuristic ({', '.join(HEURISTICS)}), "
     "like AlphaBeta:8 or AlphaBeta:8:mix; "
-    "Deepening and MCTS can also take a time limit per move, like Deepening:0.5s:mix or MCTS:1s; "
-    "MCTS can also take a number of playouts per move, like MCTS:1000"
+    "Deepening, MCTS and OpenSpielMCTS can also take a time limit per move, like Deepening:0.5s:mix or MCTS:1s; "
+    "MCTS and OpenSpielMCTS can also take a number of playouts per move, like MCTS:1000"
 )
 
 

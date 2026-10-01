@@ -59,7 +59,7 @@ Words in **bold** are defined in `../CONTEXT.md`.
 - [x] 9. Better heuristics: seeds on my side, weak pits with 1–2 seeds, mobility, a big pit with 12+ seeds.
 - [x] 10. Move ordering, iterative deepening and a time limit.
 - [x] 11. MCTS.
-- [ ] 12. OpenSpiel agents (alpha-beta, MCTS) as outside opponents.
+- [x] 12. OpenSpiel agents (alpha-beta, MCTS) as outside opponents.
 
 After each agent step, run a tournament against the agents we already have, to see if the new one is really stronger.
 

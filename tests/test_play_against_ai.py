@@ -173,7 +173,9 @@ def test_the_menu_offers_every_ai_agent_and_every_button_fits_in_the_window():
     window = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
     # Plain Deepening is left out: with store_diff it is only a quicker AlphaBeta.
-    offered = {PERSON, *(set(AGENTS) - {"Deepening"}), "AlphaBeta:mix", "Deepening:mix"}
+    # OpenSpiel's agents are outside opponents for Watch and Tournament, and need the command line.
+    left_out = {"Deepening", "OpenSpielMCTS", "OpenSpielAlphaBeta"}
+    offered = {PERSON, *(set(AGENTS) - left_out), "AlphaBeta:mix", "Deepening:mix"}
     assert {name for _, name in menu.player_buttons} == offered
     for button in [*menu.player_buttons.values(), *menu.first_buttons.values(), menu.start_button]:
         assert window.contains(button.rect), button.label

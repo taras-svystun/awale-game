@@ -118,6 +118,20 @@ Give it more time with a number of seconds and an "s", or a fixed number of rand
 .venv/bin/awale watch MCTS:1s MCTS:1000
 ```
 
+OpenSpiel's agents are opponents written by someone else (see [AI agents](#ai-agents)). Watch OpenSpiel's MCTS play ours, both with 0.1 seconds per move. OpenSpiel's plays about 7 times more random games in that time:
+
+```sh
+.venv/bin/awale watch OpenSpielMCTS MCTS
+```
+
+OpenSpiel's alpha-beta gives every move the same score as our AlphaBeta at the same depth. When moves tie, it always takes the leftmost one:
+
+```sh
+.venv/bin/awale watch OpenSpielAlphaBeta:4 AlphaBeta:4
+```
+
+While OpenSpiel's MCTS thinks, the window does not redraw (its C++ code holds Python's lock), so with `OpenSpielMCTS:1s` the window stops for a second at each of its moves.
+
 Keys: N starts a new game with the same agents, M goes back to the menu, Esc quits.
 Every finished Watch game is saved as a game record too.
 
@@ -137,6 +151,10 @@ Each agent is explained in its own file in [docs/agents](docs/agents):
   - `MCTS:1s` thinks for 1 second per move;
   - `MCTS:1000` plays 1000 playouts per move, with no time limit. The same seed then always gives the same moves;
   - `MCTS:1000:1s` stops after 1000 playouts or after 1 second.
+
+- **OpenSpielMCTS** and **OpenSpielAlphaBeta** ([openspiel.md](docs/agents/openspiel.md)): the MCTS and the alpha-beta of [OpenSpiel](https://github.com/google-deepmind/open_spiel), a game library from DeepMind. We did not write them, so they are outside opponents to test our agents against. They are not in the start menu; use them in `watch` and `tournament`.
+  - `OpenSpielMCTS` is written in C++ and plays about 7 times more random games per second than our MCTS. Like MCTS, it thinks for 0.1 seconds per move, and takes a time and a number of playouts: `OpenSpielMCTS:1s`, `OpenSpielMCTS:1000`.
+  - `OpenSpielAlphaBeta` is written in Python and uses our heuristics, since OpenSpiel has none for Awalé. Like AlphaBeta, it looks 6 moves ahead, and takes a depth and a heuristic: `OpenSpielAlphaBeta:4:mix`.
 
 In the start menu, Minimax always looks 4 moves ahead and AlphaBeta 6, AlphaBeta:mix is AlphaBeta with the `mix` heuristic, Deepening:mix is Deepening with `mix` and 0.1 seconds per move, and MCTS thinks for 0.1 seconds per move. On the command line (`watch` and `tournament`) you can set their depth, heuristic, playouts and time.
 
@@ -247,6 +265,26 @@ MCTS with 1 second per move against MCTS with 0.1 seconds (50 games, about 10 mi
 .venv/bin/awale tournament MCTS:1s MCTS --openings 25 --seed 1 --workers 4
 ```
 
+OpenSpiel's alpha-beta against ours, both 4 moves ahead (about half a minute). They give every move the same score, so they are even:
+
+```sh
+.venv/bin/awale tournament OpenSpielAlphaBeta:4 AlphaBeta:4 --seed 1 --workers 4
+```
+
+OpenSpiel's MCTS against ours, with the same number of playouts, and then with the same time, 0.1 seconds per move (100 games each, about 2 minutes each):
+
+```sh
+.venv/bin/awale tournament OpenSpielMCTS:300 MCTS:300 --openings 50 --seed 1 --workers 4
+.venv/bin/awale tournament OpenSpielMCTS MCTS --openings 50 --seed 1 --workers 4
+```
+
+OpenSpiel's MCTS against Deepening with `mix`, with 0.1 seconds per move (100 games, about 2 minutes), and with 1 second per move for OpenSpiel (50 games, about 8 minutes):
+
+```sh
+.venv/bin/awale tournament OpenSpielMCTS Deepening:mix --openings 50 --seed 1 --workers 4
+.venv/bin/awale tournament OpenSpielMCTS:1s Deepening:mix --openings 25 --seed 1 --workers 4
+```
+
 Save every game in a CSV file in `records/tournaments` (the last 10 tournaments are kept):
 
 ```sh
@@ -307,7 +345,7 @@ Only the quick rule tests, without OpenSpiel:
 Only the agents' tests:
 
 ```sh
-.venv/bin/pytest tests/test_agents.py tests/test_random_agent.py tests/test_greedy_agent.py tests/test_minimax_agent.py tests/test_alphabeta_agent.py tests/test_heuristics.py tests/test_deepening_agent.py tests/test_mcts_agent.py
+.venv/bin/pytest tests/test_agents.py tests/test_random_agent.py tests/test_greedy_agent.py tests/test_minimax_agent.py tests/test_alphabeta_agent.py tests/test_heuristics.py tests/test_deepening_agent.py tests/test_mcts_agent.py tests/test_openspiel_agents.py
 ```
 
 Only the Watch window tests:
